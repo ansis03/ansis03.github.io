@@ -72,7 +72,13 @@ UNION SQL Injection을 할 준비가 되었다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-3-출력-column-확인"&gt;Step 3. 출력 Column 확인
 &lt;/h2&gt;&lt;p&gt;Column이 4개여도 WAS가 클라이언트에게 보여주는 Column은 그보다 적을 수 있다. 어떤 인덱스가 출력되는지 확인해야 한다.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;UNION SELECT 1, 2, 3, 4 #&lt;/code&gt; 와 같이 더미 데이터를 넣어서 확인한다. 만약 화면에 2, 3, 4번만 출력된다면 1번 Column으로 데이터를 찾아도 화면에는 보이지 않는다. 따라서 출력되는 위치를 파악하는 것이 중요하다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/9image.png"
+loading="lazy"
+alt="Fig 9. 출력되는 Column 개수 확인"
+&gt;
+그림에서 확인할 수 있듯, WAS는 클라이언트에 3개의 Column 만을 보여주고 있다.&lt;/p&gt;
+&lt;p&gt;따라서, 출력되는 Colum이 몇번째 Index에 해당하는지를 확인하여야 한다.
+&lt;code&gt;UNION SELECT 1, 2, 3, 4 #&lt;/code&gt; 와 같이 더미 데이터를 넣어서 확인한다. 만약 화면에 2, 3, 4번만 출력된다면 1번 Column으로 데이터를 찾아도 화면에는 보이지 않는다. 따라서 출력되는 위치를 파악하는 것이 중요하다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-4-db-이름-확인"&gt;Step 4. DB 이름 확인
 &lt;/h2&gt;&lt;p&gt;어떤 테이블이 있는지 확인하기 위해 DB 이름을 먼저 알아낸다. MySQL 기준으로 &lt;code&gt;database()&lt;/code&gt; 함수를 이용한다.&lt;/p&gt;
