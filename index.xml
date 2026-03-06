@@ -27,12 +27,48 @@ alt="Fig 3. over%’ and ‘1%’=‘1 문구 삽입"
 &lt;hr&gt;
 &lt;h2 id="step-2-column-개수-파악하기"&gt;Step 2. Column 개수 파악하기
 &lt;/h2&gt;&lt;p&gt;UNION을 쓰기 위해서는 SELECT문에 몇 개의 Column이 사용되는지 알아야 한다. 이를 위해 &lt;strong&gt;order by trick&lt;/strong&gt;을 사용한다.&lt;/p&gt;
-&lt;p&gt;컬럼 명을 모르더라도 인덱스 번호를 통해 정렬이 가능하다는 점을 이용한다.&lt;/p&gt;
+&lt;p&gt;ORDER BY를 통해 특정 Column의 오름차순 내림차순 정렬을 할 수 있다.
+&lt;code&gt;SELECT id, pass FROM member ORDER BY id&lt;/code&gt;
+&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/4image.png"
+loading="lazy"
+alt="Fig 4. order by trick"
+&gt;
+이렇게 id에 대해 오름차순 정렬을 하였다.&lt;/p&gt;
+&lt;p&gt;중요한 점은, 컬럼 명을 모르더라도 인덱스 번호를 통해 정렬이 가능하다는 것이다.&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;over%' ORDER BY 1#&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;over%' ORDER BY 2#&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;over%' ORDER BY 1#&lt;/code&gt;
+&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/5image.png"
+loading="lazy"
+alt="Fig 5. over%&amp;#39; ORDER BY 1#"
+&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;over%' ORDER BY 2#&lt;/code&gt;
+&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/6image.png"
+loading="lazy"
+alt="Fig 6. over%&amp;#39; ORDER BY 2#"
+&gt;
+이런 식으로 숫자를 올리다가 &lt;code&gt;Unknown column&lt;/code&gt; 오류가 나는 지점을 찾는다.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;이런 식으로 숫자를 올리다가 &lt;code&gt;Unknown column&lt;/code&gt; 오류가 나는 지점을 찾는다. 예를 들어 5번째에서 오류가 난다면 Column 개수는 4개인 것이다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/7image.png"
+loading="lazy"
+alt="Fig 7. error"
+&gt;
+Unknown column 3라는 오류가 났다.
+즉, ORDER BY indexing을 통해 컬럼 개수가 몇개인지를 알 수 있다.&lt;/p&gt;
+&lt;p&gt;아까의 게임 검색에 응용하면,&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; gameName &lt;span style="color:#66d9ef"&gt;LIKE&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;%___%&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;여기에서,&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;over&lt;span style="color:#f92672"&gt;%&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; ORDER BY 1#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;을 넣어&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; gameName &lt;span style="color:#66d9ef"&gt;LIKE&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;%over%&amp;#39;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;ORDER&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;BY&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;&lt;span style="color:#f92672"&gt;#%&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;이런 구문을 만들 수 있다.&lt;/p&gt;
+&lt;p&gt;INDEX를 하나씩 늘리다 보면,
+&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/8image.png"
+loading="lazy"
+alt="Fig 8. error2"
+&gt;
+5번째에서 오류가 난다.
+즉 Column의 개수는 4개이다.
+UNION SQL Injection을 할 준비가 되었다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-3-출력-column-확인"&gt;Step 3. 출력 Column 확인
 &lt;/h2&gt;&lt;p&gt;Column이 4개여도 WAS가 클라이언트에게 보여주는 Column은 그보다 적을 수 있다. 어떤 인덱스가 출력되는지 확인해야 한다.&lt;/p&gt;
