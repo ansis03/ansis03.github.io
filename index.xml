@@ -13,7 +13,12 @@
 loading="lazy"
 alt="Fig. 1. Overwatch 검색 결과"
 &gt;
-Overwatch를 검색했을 때 해당 게임이 나오고, over 까지만 검색해도 결과가 나온다면 검색 로직이 &lt;code&gt;WHERE gameName LIKE '%검색어%'&lt;/code&gt; 형태일 것이라고 예상할 수 있다.&lt;/p&gt;
+Overwatch를 검색했을 때 해당 게임이 나오고,
+&lt;img src="https://ansis03.github.io/static/image/sql_injection/union/2image.png"
+loading="lazy"
+alt="Fig. 2. over 검색 결과"
+&gt;
+over 까지만 검색해도 결과가 나온다면 검색 로직이 &lt;code&gt;WHERE gameName LIKE '%검색어%'&lt;/code&gt; 형태일 것이라고 예상할 수 있다.&lt;/p&gt;
 &lt;p&gt;이때 &lt;code&gt;over%' and '1%' = '1&lt;/code&gt; 과 같은 쿼리를 넣어본다. 만약 &lt;code&gt;WHERE gameName LIKE '%over%' and '1%' = '1%'&lt;/code&gt; 가 되어 정상적으로 작동한다면, SQL Injection이 가능한 구조임을 확인할 수 있다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-2-column-개수-파악하기"&gt;Step 2. Column 개수 파악하기
