@@ -115,12 +115,17 @@ alt="Fig 13. tables 이름"
 &lt;hr&gt;
 &lt;h2 id="step-6-column-이름-확인"&gt;Step 6. Column 이름 확인
 &lt;/h2&gt;&lt;p&gt;테이블 이름을 알아냈다면 해당 테이블의 컬럼 이름도 찾아야 한다.&lt;/p&gt;
+&lt;p&gt;Table 이름이 DB 에 저장되어있던 것 처럼, Column 이름도 DB에 저장되어있다.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;column_name&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; information_schema.columns
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;table_name&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;[Table_Name]&amp;#39;&lt;/span&gt; &lt;span style="color:#f92672"&gt;#&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;지금까지의 단계를 통해 테이블 이름, 컬럼 이름, 컬럼 개수를 모두 파악했다면 데이터를 뽑을 준비가 완료된 것이다.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;table_name&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;[Table_Name]&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;이렇게 찾을 수 있다.
+![Fig 14. column 목록(/static/image/sql_injection/union/14image.png)&lt;/p&gt;
+&lt;p&gt;지금까지의 단계를 통해 테이블 이름, 컬럼 이름, 컬럼 개수를 모두 파악했다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-7-데이터-추출"&gt;Step 7. 데이터 추출
 &lt;/h2&gt;&lt;p&gt;마지막으로 알아낸 정보를 조합하여 데이터를 추출한다.&lt;/p&gt;
-&lt;p&gt;UNION SELECT 1, id, pass, 4 FROM member # 와 같은 방식으로 질의하면 원하는 데이터를 얻을 수 있다. 이 기법은 로그인 페이지처럼 결과가 한정적인 곳보다, DB 질의 결과가 직접 화면에 출력되는 게시판 같은 곳에서 가장 효과적이다.&lt;/p&gt;
+&lt;p&gt;UNION SELECT 1, id, pass, 4 FROM member # 와 같은 방식으로 질의하면 원하는 데이터를 얻을 수 있다.
+![Fig 15. column 목록(/static/image/sql_injection/union/15image.png)
+이 기법은 로그인 페이지처럼 결과가 한정적인 곳보다, DB 질의 결과가 직접 화면에 출력되는 게시판 같은 곳에서 가장 효과적이다.&lt;/p&gt;
 &lt;hr&gt;</description></item></channel></rss>
