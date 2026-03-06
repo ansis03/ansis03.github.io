@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ansis03의 개발 블로그</title><link>https://ansis03.github.io/posts/</link><description>Recent content in Posts on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Mon, 20 Oct 2025 11:48:09 +0900</lastBuildDate><atom:link href="https://ansis03.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>UNION SQL Injection의 이해와 7단계 공격 과정</title><link>https://ansis03.github.io/posts/sql_injection/union/</link><pubDate>Mon, 20 Oct 2025 11:48:09 +0900</pubDate><guid>https://ansis03.github.io/posts/sql_injection/union/</guid><description>&lt;p&gt;&lt;strong&gt;UNION SQL Injection&lt;/strong&gt;은 2개 이상의 SELECT 문 결과를 결합하는 UNION 연산자를 악용하여, 공격자가 원하는 결과물을 붙여서 나오게 하는 기법이다. 자동으로 중복되는 열은 제거하고 보여준다.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ansis03의 개발 블로그</title><link>https://ansis03.github.io/posts/</link><description>Recent content in Posts on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Wed, 26 Nov 2025 11:48:09 +0900</lastBuildDate><atom:link href="https://ansis03.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>UNION SQL Injection의 이해와 7단계 공격 과정</title><link>https://ansis03.github.io/posts/sql_injection/union/</link><pubDate>Wed, 26 Nov 2025 11:48:09 +0900</pubDate><guid>https://ansis03.github.io/posts/sql_injection/union/</guid><description>&lt;p&gt;&lt;strong&gt;UNION SQL Injection&lt;/strong&gt;은 2개 이상의 SELECT 문 결과를 결합하는 UNION 연산자를 악용하여, 공격자가 원하는 결과물을 붙여서 나오게 하는 기법이다. 자동으로 중복되는 열은 제거하고 보여준다.&lt;/p&gt;
 &lt;h3 id="사용-규칙"&gt;사용 규칙
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;UNION으로 결합하려는 모든 SELECT 문은 반드시 같은 수의 열을 가져야 한다.&lt;/li&gt;
@@ -8,8 +8,12 @@
 &lt;p&gt;이 UNION을 활용하면 앞에 나오는 결과물에 원하는 결과물을 붙여서 나오게 할 수 있다. 하지만 원하는 결과물을 출력하려면 해당 데이터가 어떤 테이블의 어떤 컬럼 명으로 있는지 알아야 한다. 아래 7단계 과정을 통해 DB 구조를 모르는 상황에서 데이터를 추출하는 방법을 설명한다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-1-sql-injection-point-찾기"&gt;Step 1. SQL Injection Point 찾기
-&lt;/h2&gt;&lt;p&gt;사용자의 파라미터가 어떻게 처리되는지 구조를 파악하는 단계이다.&lt;/p&gt;
-&lt;p&gt;Overwatch를 검색했을 때 해당 게임이 나오고, over 까지만 검색해도 결과가 나온다면 검색 로직이 &lt;code&gt;WHERE gameName LIKE '%검색어%'&lt;/code&gt; 형태일 것이라고 예상할 수 있다.&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;사용자의 파라미터가 어떻게 처리되는지 구조를 파악하는 단계이다.
+&lt;img src="https://ansis03.github.io/image/sql_injection/union/1image.png"
+loading="lazy"
+alt="Fig. 1. Overwatch 검색 결과"
+&gt;
+Overwatch를 검색했을 때 해당 게임이 나오고, over 까지만 검색해도 결과가 나온다면 검색 로직이 &lt;code&gt;WHERE gameName LIKE '%검색어%'&lt;/code&gt; 형태일 것이라고 예상할 수 있다.&lt;/p&gt;
 &lt;p&gt;이때 &lt;code&gt;over%' and '1%' = '1&lt;/code&gt; 과 같은 쿼리를 넣어본다. 만약 &lt;code&gt;WHERE gameName LIKE '%over%' and '1%' = '1%'&lt;/code&gt; 가 되어 정상적으로 작동한다면, SQL Injection이 가능한 구조임을 확인할 수 있다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="step-2-column-개수-파악하기"&gt;Step 2. Column 개수 파악하기
