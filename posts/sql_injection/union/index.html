@@ -37,8 +37,8 @@ segfault_sql 이 DB 이름임을 확인했다.</p><hr><h2 id=step-5-table-이름
 </span></span><span style=display:flex><span><span style=color:#66d9ef>FROM</span> information_schema.columns
 </span></span><span style=display:flex><span><span style=color:#66d9ef>WHERE</span> <span style=color:#66d9ef>table_name</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;[Table_Name]&#39;</span>
 </span></span></code></pre></div><p>이렇게 찾을 수 있다.
-![Fig 14. column 목록(/static/image/sql_injection/union/14image.png)</p><p>지금까지의 단계를 통해 테이블 이름, 컬럼 이름, 컬럼 개수를 모두 파악했다.</p><hr><h2 id=step-7-데이터-추출>Step 7. 데이터 추출</h2><p>마지막으로 알아낸 정보를 조합하여 데이터를 추출한다.</p><p>UNION SELECT 1, id, pass, 4 FROM member # 와 같은 방식으로 질의하면 원하는 데이터를 얻을 수 있다.
-![Fig 15. column 목록(/static/image/sql_injection/union/15image.png)
+<img src=/static/image/sql_injection/union/14image.png loading=lazy alt="Fig 14. column 목록"></p><p>지금까지의 단계를 통해 테이블 이름, 컬럼 이름, 컬럼 개수를 모두 파악했다.</p><hr><h2 id=step-7-데이터-추출>Step 7. 데이터 추출</h2><p>마지막으로 알아낸 정보를 조합하여 데이터를 추출한다.</p><p>UNION SELECT 1, id, pass, 4 FROM member # 와 같은 방식으로 질의하면 원하는 데이터를 얻을 수 있다.
+<img src=/static/image/sql_injection/union/15image.png loading=lazy alt="Fig 15. 데이터 추출">
 이 기법은 로그인 페이지처럼 결과가 한정적인 곳보다, DB 질의 결과가 직접 화면에 출력되는 게시판 같은 곳에서 가장 효과적이다.</p><hr></section><footer class=article-footer></footer></article><footer class=site-footer><section class=copyright>&copy;
 2025 -
 2026 ansis03의 개발 블로그</section><section class=powerby>Made with Hugo and Stack Theme<br>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.31.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
