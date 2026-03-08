@@ -81,7 +81,64 @@ alt="Fig 175. 데이터 추출 시작"
 &lt;p&gt;모든 자리수를 탐색한 결과, 추출된 데이터는 **&lt;code&gt;Overwatch&lt;/code&gt;**이다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="요약"&gt;요약
-&lt;/h2&gt;&lt;p&gt;Blind SQL Injection은 응답의 참/거짓 결과만을 보고 퍼즐을 맞추듯 데이터를 찾아가는 기법이다. 수작업으로는 시간이 매우 오래 걸리므로 파이썬 등을 활용한 자동화 툴을 제작하여 사용하는 것이 일반적이다.&lt;/p&gt;</description></item><item><title>UNION SQL Injection의 이해와 7단계 공격 과정</title><link>https://ansis03.github.io/posts/sql_injection/union/</link><pubDate>Wed, 26 Nov 2025 11:48:09 +0900</pubDate><guid>https://ansis03.github.io/posts/sql_injection/union/</guid><description>&lt;p&gt;&lt;strong&gt;UNION SQL Injection&lt;/strong&gt;은 2개 이상의 SELECT 문 결과를 결합하는 UNION 연산자를 악용하여, 공격자가 원하는 결과물을 붙여서 나오게 하는 기법이다. 자동으로 중복되는 열은 제거하고 보여준다.&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;Blind SQL Injection은 응답의 참/거짓 결과만을 보고 퍼즐을 맞추듯 데이터를 찾아가는 기법이다. 수작업으로는 시간이 매우 오래 걸리므로 파이썬 등을 활용한 자동화 툴을 제작하여 사용하는 것이 일반적이다.&lt;/p&gt;</description></item><item><title>Error Based SQL Injection: ExtractValue와 UpdateXML을 이용한 데이터 추출</title><link>https://ansis03.github.io/posts/sql_injection/error/</link><pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/sql_injection/error/</guid><description>&lt;p&gt;&lt;strong&gt;Error Based SQL Injection&lt;/strong&gt;은 데이터베이스에서 발생하는 에러 메시지에 민감한 정보를 포함시켜 출력하게 함으로써 데이터를 탈취하는 기법이다. 화면에 쿼리 결과가 직접 나오지 않더라도 에러 메시지가 출력되는 환경에서 유효하다.&lt;/p&gt;
+&lt;h3 id="에러의-종류"&gt;에러의 종류
+&lt;/h3&gt;&lt;p&gt;SQL 실행 과정에서 발생하는 에러는 크게 두 가지로 나뉜다.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Syntax Error (문법 에러)&lt;/strong&gt;: SQL 구문이 실행되기 전, 문법 자체가 틀렸을 때 발생한다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Logic Error (로직 에러)&lt;/strong&gt;: SQL 구문은 정상적이지만, 실행 과정에서 함수나 연산의 논리적 오류로 인해 발생한다.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Error Based SQL Injection은 주로 실행 과정에서 의도적으로 로직 에러를 유도하는 함수들을 사용한다.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="1-extractvalue를-이용한-공격"&gt;1. ExtractValue()를 이용한 공격
+&lt;/h2&gt;&lt;h3 id="원래-목적"&gt;원래 목적
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;ExtractValue(xml_frag, xpath_expr)&lt;/code&gt; 함수는 DB에 저장된 XML 문자열에서 XPath(XML 경로 언어) 표기법을 사용하여 특정 요소의 값을 읽어올 때 사용한다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;사용 예시&lt;/strong&gt;
+데이터베이스에 아래와 같은 XML 형태의 회원 정보가 저장되어 있다고 가정한다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;&amp;lt;user&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;lt;id&amp;gt;&lt;/span&gt;admin&lt;span class="nt"&gt;&amp;lt;/id&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;lt;email&amp;gt;&lt;/span&gt;admin@example.com&lt;span class="nt"&gt;&amp;lt;/email&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;&amp;lt;/user&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;여기서 &lt;code&gt;&amp;lt;email&amp;gt;&lt;/code&gt; 태그의 값만 가져오려면 다음과 같이 쿼리한다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ExtractValue&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;lt;user&amp;gt;&amp;lt;id&amp;gt;admin&amp;lt;/id&amp;gt;&amp;lt;email&amp;gt;admin@example.com&amp;lt;/email&amp;gt;&amp;lt;/user&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/user/email&amp;#39;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="c1"&gt;-- 결과: admin@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="sql-injection-원리"&gt;SQL Injection 원리
+&lt;/h3&gt;&lt;p&gt;이 함수가 악용되는 이유는 XPath 유효성 검사 방식 때문이다. 함수는 두 번째 인자인 &lt;code&gt;xpath_expr&lt;/code&gt;이 올바른 문법인지 검사하는데, 이때 문법에 맞지 않는 특수문자나 문자열이 들어오면 MySQL은 에러 메시지와 함께 잘못된 문자열을 그대로 출력한다.&lt;/p&gt;
+&lt;p&gt;해커는 이 점을 이용해 XPath 자리에 의도적으로 문법을 틀리게 만드는 특수문자(&lt;code&gt;0x3a&lt;/code&gt; 즉, &lt;code&gt;:&lt;/code&gt;)와 탈취하려는 쿼리를 합쳐서 넣는다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;공격자 쿼리 예시&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ExtractValue&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;concat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="n"&gt;x3a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;users&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;LIMIT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)));&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;위 쿼리가 실행되면 XPath 문법 에러가 발생하며, 에러 메시지에 사용자의 비밀번호가 포함되어 출력된다.&lt;/p&gt;
+&lt;h2 id="2-updatexml을-이용한-공격"&gt;2. UpdateXML()을 이용한 공격
+&lt;/h2&gt;&lt;h3 id="원래-목적-1"&gt;원래 목적
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;UpdateXML(xml_target, xpath_expr, new_xml)&lt;/code&gt; 함수는 XML 데이터에서 특정 부분을 새로운 내용으로 교체할 때 사용한다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;xml_target&lt;/code&gt;: 원본 XML 데이터&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;xpath_expr&lt;/code&gt;: 변경할 부분을 가리키는 경로&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;new_xml&lt;/code&gt;: 교체할 새로운 데이터&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;** 사용 예시 **
+비밀번호를 1234에서 5678로 수정하는 경우 다음과 같이 사용한다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;UpdateXML&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;lt;user&amp;gt;&amp;lt;password&amp;gt;1234&amp;lt;/password&amp;gt;&amp;lt;/user&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/user/password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&amp;lt;password&amp;gt;5678&amp;lt;/password&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="c1"&gt;-- 결과: &amp;lt;user&amp;gt;&amp;lt;password&amp;gt;5678&amp;lt;/password&amp;gt;&amp;lt;/user&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="sql-injection-원리-1"&gt;SQL Injection 원리
+&lt;/h3&gt;&lt;p&gt;UpdateXML 역시 경로를 나타내는 &lt;code&gt;xpath_expr&lt;/code&gt; 자리에 올바르지 않은 XPath 문법이 들어오면 에러를 발생시킨다. XPath는 특수문자로 시작할 수 없다는 규칙을 악용한다.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;공격자 쿼리 예시&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;UpdateXML&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;null&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;concat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="n"&gt;x3a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;user&lt;/span&gt;&lt;span class="p"&gt;())),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;null&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;xml_target&lt;/code&gt;과 &lt;code&gt;new_xml&lt;/code&gt;에는 아무 값(null 등)이나 넣고, 가운데 경로 자리에 특수문자와 함께 &lt;code&gt;user()&lt;/code&gt; 함수 등의 결과를 붙여 넣는다. MySQL은 에러를 출력할 때 쿼리의 결과값인 현재 사용자 정보를 함께 보여주게 된다.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="요약-및-결론"&gt;요약 및 결론
+&lt;/h2&gt;&lt;p&gt;Error Based SQL Injection은 서버가 사용자에게 상세한 에러 메시지를 보여줄 때 매우 강력한 공격 수단이 된다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ExtractValue와 UpdateXML 모두 XPath 문법 오류를 유도하여 데이터를 탈취한다.&lt;/li&gt;
+&lt;li&gt;이를 방어하기 위해서는 데이터베이스 에러 메시지가 사용자에게 직접 노출되지 않도록 설정하고, 입력값에 대한 엄격한 필터링이 필요하다.&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>UNION SQL Injection의 이해와 7단계 공격 과정</title><link>https://ansis03.github.io/posts/sql_injection/union/</link><pubDate>Wed, 26 Nov 2025 11:48:09 +0900</pubDate><guid>https://ansis03.github.io/posts/sql_injection/union/</guid><description>&lt;p&gt;&lt;strong&gt;UNION SQL Injection&lt;/strong&gt;은 2개 이상의 SELECT 문 결과를 결합하는 UNION 연산자를 악용하여, 공격자가 원하는 결과물을 붙여서 나오게 하는 기법이다. 자동으로 중복되는 열은 제거하고 보여준다.&lt;/p&gt;
 &lt;h3 id="사용-규칙"&gt;사용 규칙
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;UNION으로 결합하려는 모든 SELECT 문은 반드시 같은 수의 열을 가져야 한다.&lt;/li&gt;
