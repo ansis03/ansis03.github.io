@@ -8,9 +8,9 @@
 loading="lazy"
 alt="Fig 0."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20201.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%201.png"
 loading="lazy"
-alt="Fig 201."
+alt="Fig 1."
 &gt;&lt;/p&gt;
 &lt;p&gt;이렇게 ID를 검색하면 중복 여부에 따라 응답 결과가 다르다.&lt;/p&gt;
 &lt;p&gt;중복을 확인 하려면 DB 에 접근 해야 할 것이고, 쿼리는 다음과 같을 것이다.&lt;/p&gt;
@@ -18,9 +18,9 @@ alt="Fig 201."
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;여기서 중요한 점은 WHERE userId = ‘ ‘에 사용자의 파라미터가 들어가서 SQL이 실행된다는 것이다.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;항등원을 넣어보면,&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20202.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202.png"
 loading="lazy"
-alt="Fig 202."
+alt="Fig 2."
 &gt;&lt;/p&gt;
 &lt;p&gt;이렇게 SQL Injection이 가능한 포인트임을 알 수 있다.&lt;/p&gt;
 &lt;p&gt;공격 포멧을 만들기 전에,&lt;/p&gt;
@@ -36,9 +36,9 @@ alt="Fig 202."
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and ((select &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20203.png"
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%203.png"
 loading="lazy"
-alt="Fig 203."
+alt="Fig 3."
 &gt;&lt;/p&gt;
 &lt;p&gt;select 문의 정상 작동을 확인하였다.&lt;/p&gt;
 &lt;p&gt;제일 처음 알아내야 할 것은 DB 이름이다.&lt;/p&gt;
@@ -58,15 +58,15 @@ alt="Fig 203."
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;database&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;a&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾아온&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DB의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름을&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;비교&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (substr((select database()), 1, 1) = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;공격&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;포멧과&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;결합&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20204.png"
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%204.png"
 loading="lazy"
-alt="Fig 204."
+alt="Fig 4."
 &gt;&lt;/p&gt;
 &lt;p&gt;‘a’는 거짓.&lt;/p&gt;
 &lt;p&gt;이걸 계속 바꿔줘야 한다. a b c d 이렇게.cj&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20205.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%205.png"
 loading="lazy"
-alt="Fig 205."
+alt="Fig 5."
 &gt;&lt;/p&gt;
 &lt;p&gt;첫번째 글자가 ‘s’임을 알아냈다.&lt;/p&gt;
 &lt;p&gt;이걸 하나씩 비교하는게 아니라, 크기 비교를 통해 해결할 수 있다.&lt;/p&gt;
@@ -81,28 +81,28 @@ alt="Fig 205."
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select database()), 1, 1)) &amp;gt; 60) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;공격&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;쿼리&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20206.png"
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%206.png"
 loading="lazy"
-alt="Fig 206."
+alt="Fig 6."
 &gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;1번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20207.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%207.png"
 loading="lazy"
-alt="Fig 207."
+alt="Fig 7."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20208.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%208.png"
 loading="lazy"
-alt="Fig 208."
+alt="Fig 8."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20209.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%209.png"
 loading="lazy"
-alt="Fig 209."
+alt="Fig 9."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202010.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2010.png"
 loading="lazy"
-alt="Fig 2010."
+alt="Fig 10."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -110,33 +110,33 @@ alt="Fig 2010."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;2번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202011.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2011.png"
 loading="lazy"
-alt="Fig 2011."
+alt="Fig 11."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202012.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2012.png"
 loading="lazy"
-alt="Fig 2012."
+alt="Fig 12."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202013.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2013.png"
 loading="lazy"
-alt="Fig 2013."
+alt="Fig 13."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202014.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2014.png"
 loading="lazy"
-alt="Fig 2014."
+alt="Fig 14."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202015.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2015.png"
 loading="lazy"
-alt="Fig 2015."
+alt="Fig 15."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202016.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2016.png"
 loading="lazy"
-alt="Fig 2016."
+alt="Fig 16."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202017.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2017.png"
 loading="lazy"
-alt="Fig 2017."
+alt="Fig 17."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -144,29 +144,29 @@ alt="Fig 2017."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;3번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202018.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2018.png"
 loading="lazy"
-alt="Fig 2018."
+alt="Fig 18."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202019.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2019.png"
 loading="lazy"
-alt="Fig 2019."
+alt="Fig 19."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202020.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020.png"
 loading="lazy"
-alt="Fig 2020."
+alt="Fig 20."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202021.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2021.png"
 loading="lazy"
-alt="Fig 2021."
+alt="Fig 21."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202022.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2022.png"
 loading="lazy"
-alt="Fig 2022."
+alt="Fig 22."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202023.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2023.png"
 loading="lazy"
-alt="Fig 2023."
+alt="Fig 23."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -174,33 +174,33 @@ alt="Fig 2023."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;4번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202024.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2024.png"
 loading="lazy"
-alt="Fig 2024."
+alt="Fig 24."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202025.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2025.png"
 loading="lazy"
-alt="Fig 2025."
+alt="Fig 25."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202026.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2026.png"
 loading="lazy"
-alt="Fig 2026."
+alt="Fig 26."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202027.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2027.png"
 loading="lazy"
-alt="Fig 2027."
+alt="Fig 27."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202028.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2028.png"
 loading="lazy"
-alt="Fig 2028."
+alt="Fig 28."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202029.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2029.png"
 loading="lazy"
-alt="Fig 2029."
+alt="Fig 29."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202030.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2030.png"
 loading="lazy"
-alt="Fig 2030."
+alt="Fig 30."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -208,13 +208,13 @@ alt="Fig 2030."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;5번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202031.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2031.png"
 loading="lazy"
-alt="Fig 2031."
+alt="Fig 31."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202032.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2032.png"
 loading="lazy"
-alt="Fig 2032."
+alt="Fig 32."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -222,25 +222,25 @@ alt="Fig 2032."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;6번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202033.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2033.png"
 loading="lazy"
-alt="Fig 2033."
+alt="Fig 33."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202034.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2034.png"
 loading="lazy"
-alt="Fig 2034."
+alt="Fig 34."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202035.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2035.png"
 loading="lazy"
-alt="Fig 2035."
+alt="Fig 35."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202036.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2036.png"
 loading="lazy"
-alt="Fig 2036."
+alt="Fig 36."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202037.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2037.png"
 loading="lazy"
-alt="Fig 2037."
+alt="Fig 37."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -248,33 +248,33 @@ alt="Fig 2037."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;7번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202038.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2038.png"
 loading="lazy"
-alt="Fig 2038."
+alt="Fig 38."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202039.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2039.png"
 loading="lazy"
-alt="Fig 2039."
+alt="Fig 39."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202040.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2040.png"
 loading="lazy"
-alt="Fig 2040."
+alt="Fig 40."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202041.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2041.png"
 loading="lazy"
-alt="Fig 2041."
+alt="Fig 41."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202042.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2042.png"
 loading="lazy"
-alt="Fig 2042."
+alt="Fig 42."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202043.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2043.png"
 loading="lazy"
-alt="Fig 2043."
+alt="Fig 43."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202044.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2044.png"
 loading="lazy"
-alt="Fig 2044."
+alt="Fig 44."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -282,29 +282,29 @@ alt="Fig 2044."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;8번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202045.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2045.png"
 loading="lazy"
-alt="Fig 2045."
+alt="Fig 45."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202046.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2046.png"
 loading="lazy"
-alt="Fig 2046."
+alt="Fig 46."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202047.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2047.png"
 loading="lazy"
-alt="Fig 2047."
+alt="Fig 47."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202048.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2048.png"
 loading="lazy"
-alt="Fig 2048."
+alt="Fig 48."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202049.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2049.png"
 loading="lazy"
-alt="Fig 2049."
+alt="Fig 49."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202050.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2050.png"
 loading="lazy"
-alt="Fig 2050."
+alt="Fig 50."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -312,25 +312,25 @@ alt="Fig 2050."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;9번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202051.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2051.png"
 loading="lazy"
-alt="Fig 2051."
+alt="Fig 51."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202052.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2052.png"
 loading="lazy"
-alt="Fig 2052."
+alt="Fig 52."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202053.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2053.png"
 loading="lazy"
-alt="Fig 2053."
+alt="Fig 53."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202054.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2054.png"
 loading="lazy"
-alt="Fig 2054."
+alt="Fig 54."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202055.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2055.png"
 loading="lazy"
-alt="Fig 2055."
+alt="Fig 55."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -338,29 +338,29 @@ alt="Fig 2055."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;10번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202056.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2056.png"
 loading="lazy"
-alt="Fig 2056."
+alt="Fig 56."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202057.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2057.png"
 loading="lazy"
-alt="Fig 2057."
+alt="Fig 57."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202058.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2058.png"
 loading="lazy"
-alt="Fig 2058."
+alt="Fig 58."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202059.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2059.png"
 loading="lazy"
-alt="Fig 2059."
+alt="Fig 59."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202060.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2060.png"
 loading="lazy"
-alt="Fig 2060."
+alt="Fig 60."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202061.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2061.png"
 loading="lazy"
-alt="Fig 2061."
+alt="Fig 61."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -368,29 +368,29 @@ alt="Fig 2061."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;11번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202062.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2062.png"
 loading="lazy"
-alt="Fig 2062."
+alt="Fig 62."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202063.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2063.png"
 loading="lazy"
-alt="Fig 2063."
+alt="Fig 63."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202064.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2064.png"
 loading="lazy"
-alt="Fig 2064."
+alt="Fig 64."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202065.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2065.png"
 loading="lazy"
-alt="Fig 2065."
+alt="Fig 65."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202066.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2066.png"
 loading="lazy"
-alt="Fig 2066."
+alt="Fig 66."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202067.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2067.png"
 loading="lazy"
-alt="Fig 2067."
+alt="Fig 67."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -398,29 +398,29 @@ alt="Fig 2067."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;12번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202068.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2068.png"
 loading="lazy"
-alt="Fig 2068."
+alt="Fig 68."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202069.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2069.png"
 loading="lazy"
-alt="Fig 2069."
+alt="Fig 69."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202070.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2070.png"
 loading="lazy"
-alt="Fig 2070."
+alt="Fig 70."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202071.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2071.png"
 loading="lazy"
-alt="Fig 2071."
+alt="Fig 71."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202072.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2072.png"
 loading="lazy"
-alt="Fig 2072."
+alt="Fig 72."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202073.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2073.png"
 loading="lazy"
-alt="Fig 2073."
+alt="Fig 73."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -428,21 +428,21 @@ alt="Fig 2073."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;13번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202074.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2074.png"
 loading="lazy"
-alt="Fig 2074."
+alt="Fig 74."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202075.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2075.png"
 loading="lazy"
-alt="Fig 2075."
+alt="Fig 75."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202076.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2076.png"
 loading="lazy"
-alt="Fig 2076."
+alt="Fig 76."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202077.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2077.png"
 loading="lazy"
-alt="Fig 2077."
+alt="Fig 77."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -464,29 +464,29 @@ alt="Fig 2077."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;1번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202078.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2078.png"
 loading="lazy"
-alt="Fig 2078."
+alt="Fig 78."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202079.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2079.png"
 loading="lazy"
-alt="Fig 2079."
+alt="Fig 79."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202080.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2080.png"
 loading="lazy"
-alt="Fig 2080."
+alt="Fig 80."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202081.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2081.png"
 loading="lazy"
-alt="Fig 2081."
+alt="Fig 81."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202082.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2082.png"
 loading="lazy"
-alt="Fig 2082."
+alt="Fig 82."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202083.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2083.png"
 loading="lazy"
-alt="Fig 2083."
+alt="Fig 83."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -494,17 +494,17 @@ alt="Fig 2083."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;2번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202084.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2084.png"
 loading="lazy"
-alt="Fig 2084."
+alt="Fig 84."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202085.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2085.png"
 loading="lazy"
-alt="Fig 2085."
+alt="Fig 85."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202086.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2086.png"
 loading="lazy"
-alt="Fig 2086."
+alt="Fig 86."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -512,25 +512,25 @@ alt="Fig 2086."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;3번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202087.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2087.png"
 loading="lazy"
-alt="Fig 2087."
+alt="Fig 87."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202088.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2088.png"
 loading="lazy"
-alt="Fig 2088."
+alt="Fig 88."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202089.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2089.png"
 loading="lazy"
-alt="Fig 2089."
+alt="Fig 89."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202090.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2090.png"
 loading="lazy"
-alt="Fig 2090."
+alt="Fig 90."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202091.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2091.png"
 loading="lazy"
-alt="Fig 2091."
+alt="Fig 91."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -538,25 +538,25 @@ alt="Fig 2091."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;4번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202092.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2092.png"
 loading="lazy"
-alt="Fig 2092."
+alt="Fig 92."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202093.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2093.png"
 loading="lazy"
-alt="Fig 2093."
+alt="Fig 93."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202094.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2094.png"
 loading="lazy"
-alt="Fig 2094."
+alt="Fig 94."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202095.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2095.png"
 loading="lazy"
-alt="Fig 2095."
+alt="Fig 95."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202096.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2096.png"
 loading="lazy"
-alt="Fig 2096."
+alt="Fig 96."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -564,21 +564,21 @@ alt="Fig 2096."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;5번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202097.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2097.png"
 loading="lazy"
-alt="Fig 2097."
+alt="Fig 97."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202098.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2098.png"
 loading="lazy"
-alt="Fig 2098."
+alt="Fig 98."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202099.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2099.png"
 loading="lazy"
-alt="Fig 2099."
+alt="Fig 99."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020100.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20100.png"
 loading="lazy"
-alt="Fig 20100."
+alt="Fig 100."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -588,21 +588,21 @@ alt="Fig 20100."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;1번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020101.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20101.png"
 loading="lazy"
-alt="Fig 20101."
+alt="Fig 101."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020102.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20102.png"
 loading="lazy"
-alt="Fig 20102."
+alt="Fig 102."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020103.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20103.png"
 loading="lazy"
-alt="Fig 20103."
+alt="Fig 103."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020104.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20104.png"
 loading="lazy"
-alt="Fig 20104."
+alt="Fig 104."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -610,25 +610,25 @@ alt="Fig 20104."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;2번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020105.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20105.png"
 loading="lazy"
-alt="Fig 20105."
+alt="Fig 105."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020106.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20106.png"
 loading="lazy"
-alt="Fig 20106."
+alt="Fig 106."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020107.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20107.png"
 loading="lazy"
-alt="Fig 20107."
+alt="Fig 107."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020108.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20108.png"
 loading="lazy"
-alt="Fig 20108."
+alt="Fig 108."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020109.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20109.png"
 loading="lazy"
-alt="Fig 20109."
+alt="Fig 109."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -636,25 +636,25 @@ alt="Fig 20109."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;3번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020110.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20110.png"
 loading="lazy"
-alt="Fig 20110."
+alt="Fig 110."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020111.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20111.png"
 loading="lazy"
-alt="Fig 20111."
+alt="Fig 111."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020112.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20112.png"
 loading="lazy"
-alt="Fig 20112."
+alt="Fig 112."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020113.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20113.png"
 loading="lazy"
-alt="Fig 20113."
+alt="Fig 113."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020114.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20114.png"
 loading="lazy"
-alt="Fig 20114."
+alt="Fig 114."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -662,17 +662,17 @@ alt="Fig 20114."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;4번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020115.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20115.png"
 loading="lazy"
-alt="Fig 20115."
+alt="Fig 115."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020116.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20116.png"
 loading="lazy"
-alt="Fig 20116."
+alt="Fig 116."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020117.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20117.png"
 loading="lazy"
-alt="Fig 20117."
+alt="Fig 117."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -680,25 +680,25 @@ alt="Fig 20117."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;5번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020118.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20118.png"
 loading="lazy"
-alt="Fig 20118."
+alt="Fig 118."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020119.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20119.png"
 loading="lazy"
-alt="Fig 20119."
+alt="Fig 119."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020120.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20120.png"
 loading="lazy"
-alt="Fig 20120."
+alt="Fig 120."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020121.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20121.png"
 loading="lazy"
-alt="Fig 20121."
+alt="Fig 121."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020122.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20122.png"
 loading="lazy"
-alt="Fig 20122."
+alt="Fig 122."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -706,21 +706,21 @@ alt="Fig 20122."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;6번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020123.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20123.png"
 loading="lazy"
-alt="Fig 20123."
+alt="Fig 123."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020124.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20124.png"
 loading="lazy"
-alt="Fig 20124."
+alt="Fig 124."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020125.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20125.png"
 loading="lazy"
-alt="Fig 20125."
+alt="Fig 125."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020126.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20126.png"
 loading="lazy"
-alt="Fig 20126."
+alt="Fig 126."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -728,17 +728,17 @@ alt="Fig 20126."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;7번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020127.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20127.png"
 loading="lazy"
-alt="Fig 20127."
+alt="Fig 127."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020128.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20128.png"
 loading="lazy"
-alt="Fig 20128."
+alt="Fig 128."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020129.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20129.png"
 loading="lazy"
-alt="Fig 20129."
+alt="Fig 129."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -748,21 +748,21 @@ alt="Fig 20129."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;1번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020130.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20130.png"
 loading="lazy"
-alt="Fig 20130."
+alt="Fig 130."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020131.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20131.png"
 loading="lazy"
-alt="Fig 20131."
+alt="Fig 131."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020132.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20132.png"
 loading="lazy"
-alt="Fig 20132."
+alt="Fig 132."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020133.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20133.png"
 loading="lazy"
-alt="Fig 20133."
+alt="Fig 133."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -770,21 +770,21 @@ alt="Fig 20133."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;2번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020134.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20134.png"
 loading="lazy"
-alt="Fig 20134."
+alt="Fig 134."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020135.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20135.png"
 loading="lazy"
-alt="Fig 20135."
+alt="Fig 135."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020136.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20136.png"
 loading="lazy"
-alt="Fig 20136."
+alt="Fig 136."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020137.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20137.png"
 loading="lazy"
-alt="Fig 20137."
+alt="Fig 137."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -792,25 +792,25 @@ alt="Fig 20137."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;3번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020138.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20138.png"
 loading="lazy"
-alt="Fig 20138."
+alt="Fig 138."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020139.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20139.png"
 loading="lazy"
-alt="Fig 20139."
+alt="Fig 139."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020140.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20140.png"
 loading="lazy"
-alt="Fig 20140."
+alt="Fig 140."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020141.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20141.png"
 loading="lazy"
-alt="Fig 20141."
+alt="Fig 141."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020142.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20142.png"
 loading="lazy"
-alt="Fig 20142."
+alt="Fig 142."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -818,25 +818,25 @@ alt="Fig 20142."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;4번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020143.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20143.png"
 loading="lazy"
-alt="Fig 20143."
+alt="Fig 143."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020144.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20144.png"
 loading="lazy"
-alt="Fig 20144."
+alt="Fig 144."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020145.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20145.png"
 loading="lazy"
-alt="Fig 20145."
+alt="Fig 145."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020146.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20146.png"
 loading="lazy"
-alt="Fig 20146."
+alt="Fig 146."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020147.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20147.png"
 loading="lazy"
-alt="Fig 20147."
+alt="Fig 147."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -844,17 +844,17 @@ alt="Fig 20147."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;5번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020148.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20148.png"
 loading="lazy"
-alt="Fig 20148."
+alt="Fig 148."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020149.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20149.png"
 loading="lazy"
-alt="Fig 20149."
+alt="Fig 149."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020150.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20150.png"
 loading="lazy"
-alt="Fig 20150."
+alt="Fig 150."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -862,25 +862,25 @@ alt="Fig 20150."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;6번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020151.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20151.png"
 loading="lazy"
-alt="Fig 20151."
+alt="Fig 151."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020152.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20152.png"
 loading="lazy"
-alt="Fig 20152."
+alt="Fig 152."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020153.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20153.png"
 loading="lazy"
-alt="Fig 20153."
+alt="Fig 153."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020154.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20154.png"
 loading="lazy"
-alt="Fig 20154."
+alt="Fig 154."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020155.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20155.png"
 loading="lazy"
-alt="Fig 20155."
+alt="Fig 155."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -888,13 +888,13 @@ alt="Fig 20155."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;7번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020156.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20156.png"
 loading="lazy"
-alt="Fig 20156."
+alt="Fig 156."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020157.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20157.png"
 loading="lazy"
-alt="Fig 20157."
+alt="Fig 157."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -918,25 +918,25 @@ alt="Fig 20157."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;1번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020158.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20158.png"
 loading="lazy"
-alt="Fig 20158."
+alt="Fig 158."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020159.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20159.png"
 loading="lazy"
-alt="Fig 20159."
+alt="Fig 159."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020160.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20160.png"
 loading="lazy"
-alt="Fig 20160."
+alt="Fig 160."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020161.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20161.png"
 loading="lazy"
-alt="Fig 20161."
+alt="Fig 161."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020162.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20162.png"
 loading="lazy"
-alt="Fig 20162."
+alt="Fig 162."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -944,21 +944,21 @@ alt="Fig 20162."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;2번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020163.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20163.png"
 loading="lazy"
-alt="Fig 20163."
+alt="Fig 163."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020164.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20164.png"
 loading="lazy"
-alt="Fig 20164."
+alt="Fig 164."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020165.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20165.png"
 loading="lazy"
-alt="Fig 20165."
+alt="Fig 165."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020166.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20166.png"
 loading="lazy"
-alt="Fig 20166."
+alt="Fig 166."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -966,29 +966,29 @@ alt="Fig 20166."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;3번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020167.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20167.png"
 loading="lazy"
-alt="Fig 20167."
+alt="Fig 167."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020168.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20168.png"
 loading="lazy"
-alt="Fig 20168."
+alt="Fig 168."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020169.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20169.png"
 loading="lazy"
-alt="Fig 20169."
+alt="Fig 169."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020170.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20170.png"
 loading="lazy"
-alt="Fig 20170."
+alt="Fig 170."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020171.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20171.png"
 loading="lazy"
-alt="Fig 20171."
+alt="Fig 171."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020172.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20172.png"
 loading="lazy"
-alt="Fig 20172."
+alt="Fig 172."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -996,13 +996,13 @@ alt="Fig 20172."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;4번째 글자&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020173.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20173.png"
 loading="lazy"
-alt="Fig 20173."
+alt="Fig 173."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020174.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20174.png"
 loading="lazy"
-alt="Fig 20174."
+alt="Fig 174."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1024,29 +1024,29 @@ alt="Fig 20174."
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;1번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020175.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20175.png"
 loading="lazy"
-alt="Fig 20175."
+alt="Fig 175."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020176.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20176.png"
 loading="lazy"
-alt="Fig 20176."
+alt="Fig 176."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020177.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20177.png"
 loading="lazy"
-alt="Fig 20177."
+alt="Fig 177."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020178.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20178.png"
 loading="lazy"
-alt="Fig 20178."
+alt="Fig 178."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020179.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20179.png"
 loading="lazy"
-alt="Fig 20179."
+alt="Fig 179."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020180.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20180.png"
 loading="lazy"
-alt="Fig 20180."
+alt="Fig 180."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1054,25 +1054,25 @@ alt="Fig 20180."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;2번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020181.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20181.png"
 loading="lazy"
-alt="Fig 20181."
+alt="Fig 181."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020182.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20182.png"
 loading="lazy"
-alt="Fig 20182."
+alt="Fig 182."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020183.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20183.png"
 loading="lazy"
-alt="Fig 20183."
+alt="Fig 183."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020184.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20184.png"
 loading="lazy"
-alt="Fig 20184."
+alt="Fig 184."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020185.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20185.png"
 loading="lazy"
-alt="Fig 20185."
+alt="Fig 185."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1080,25 +1080,25 @@ alt="Fig 20185."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;3번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020186.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20186.png"
 loading="lazy"
-alt="Fig 20186."
+alt="Fig 186."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020187.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20187.png"
 loading="lazy"
-alt="Fig 20187."
+alt="Fig 187."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020188.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20188.png"
 loading="lazy"
-alt="Fig 20188."
+alt="Fig 188."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020189.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20189.png"
 loading="lazy"
-alt="Fig 20189."
+alt="Fig 189."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020190.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20190.png"
 loading="lazy"
-alt="Fig 20190."
+alt="Fig 190."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1106,25 +1106,25 @@ alt="Fig 20190."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;4번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020191.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20191.png"
 loading="lazy"
-alt="Fig 20191."
+alt="Fig 191."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020192.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20192.png"
 loading="lazy"
-alt="Fig 20192."
+alt="Fig 192."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020193.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20193.png"
 loading="lazy"
-alt="Fig 20193."
+alt="Fig 193."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020194.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20194.png"
 loading="lazy"
-alt="Fig 20194."
+alt="Fig 194."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020195.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20195.png"
 loading="lazy"
-alt="Fig 20195."
+alt="Fig 195."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1132,21 +1132,21 @@ alt="Fig 20195."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;5번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020196.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20196.png"
 loading="lazy"
-alt="Fig 20196."
+alt="Fig 196."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020197.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20197.png"
 loading="lazy"
-alt="Fig 20197."
+alt="Fig 197."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020198.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20198.png"
 loading="lazy"
-alt="Fig 20198."
+alt="Fig 198."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020199.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20199.png"
 loading="lazy"
-alt="Fig 20199."
+alt="Fig 199."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1154,17 +1154,17 @@ alt="Fig 20199."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;6번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020200.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20200.png"
 loading="lazy"
-alt="Fig 20200."
+alt="Fig 200."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020201.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20201.png"
 loading="lazy"
-alt="Fig 20201."
+alt="Fig 201."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020202.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20202.png"
 loading="lazy"
-alt="Fig 20202."
+alt="Fig 202."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1172,21 +1172,21 @@ alt="Fig 20202."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;7번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020203.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20203.png"
 loading="lazy"
-alt="Fig 20203."
+alt="Fig 203."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020204.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20204.png"
 loading="lazy"
-alt="Fig 20204."
+alt="Fig 204."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020205.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20205.png"
 loading="lazy"
-alt="Fig 20205."
+alt="Fig 205."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020206.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20206.png"
 loading="lazy"
-alt="Fig 20206."
+alt="Fig 206."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1194,21 +1194,21 @@ alt="Fig 20206."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;8번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020207.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20207.png"
 loading="lazy"
-alt="Fig 20207."
+alt="Fig 207."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020208.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20208.png"
 loading="lazy"
-alt="Fig 20208."
+alt="Fig 208."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020209.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20209.png"
 loading="lazy"
-alt="Fig 20209."
+alt="Fig 209."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020210.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20210.png"
 loading="lazy"
-alt="Fig 20210."
+alt="Fig 210."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -1216,23 +1216,26 @@ alt="Fig 20210."
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;9번째 글자 찾기&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020211.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20211.png"
 loading="lazy"
-alt="Fig 20211."
+alt="Fig 211."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020212.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20212.png"
 loading="lazy"
-alt="Fig 20212."
+alt="Fig 212."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020213.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20213.png"
 loading="lazy"
-alt="Fig 20213."
+alt="Fig 213."
 &gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;9번째 글자는 h&lt;/p&gt;
+&lt;p&gt;컬럼 명은 Overwatch&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="결론"&gt;결론
 &lt;/h2&gt;&lt;p&gt;Blind SQL Injection은 서버가 내뱉는 단 한 줄의 응답 차이를 단서로 삼아 거대한 데이터베이스를 파헤치는 정밀한 공격 기법이다. 비록 수많은 요청과 비교 과정이 필요하여 시간이 오래 걸린다는 단점이 있지만, 정보가 직접 노출되지 않는 &amp;lsquo;눈먼(Blind)&amp;rsquo; 환경에서도 데이터를 탈취할 수 있다는 점에서 매우 위협적이다.&lt;/p&gt;
+&lt;p&gt;따라서 개발 단계에서부터 사용자 입력값에 대한 철저한 검증과 함께, 응답의 미세한 차이를 통해 내부 구조가 유추되지 않도록 보안 설정을 강화해야 한다.&lt;/p&gt;
 &lt;p&gt;따라서 개발 단계에서부터 사용자 입력값에 대한 철저한 검증과 함께, 응답의 미세한 차이를 통해 내부 구조가 유추되지 않도록 보안 설정을 강화해야 한다.&lt;/p&gt;</description></item><item><title>Error Based SQL Injection: ExtractValue와 UpdateXML을 이용한 데이터 추출</title><link>https://ansis03.github.io/posts/sql_injection/error/</link><pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/sql_injection/error/</guid><description>&lt;p&gt;&lt;strong&gt;Error Based SQL Injection&lt;/strong&gt;은 데이터베이스에서 발생하는 에러 메시지에 민감한 정보를 포함시켜 출력하게 함으로써 데이터를 탈취하는 기법이다. 화면에 쿼리 결과가 직접 나오지 않더라도 에러 메시지가 출력되는 환경에서 유효하다.&lt;/p&gt;
 &lt;h3 id="에러의-종류"&gt;에러의 종류
 &lt;/h3&gt;&lt;p&gt;SQL 실행 과정에서 발생하는 에러는 크게 두 가지로 나뉜다.&lt;/p&gt;
