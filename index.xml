@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ansis03의 개발 블로그</title><link>https://ansis03.github.io/</link><description>Recent content on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Sun, 01 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://ansis03.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>파일 업로드 취약점과 Web Shell 공격 우회 기법</title><link>https://ansis03.github.io/posts/file_upload/file_upload/</link><pubDate>Sun, 01 Feb 2026 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/file_upload/file_upload/</guid><description>&lt;p&gt;**파일 업로드 취약점(File Upload Vulnerability)**은 공격자가 악의적인 파일을 웹 서버에 업로드하여 시스템을 제어할 수 있게 만드는 치명적인 취약점이다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md]. 단순한 피싱 페이지 호스팅이나 XSS 공격을 넘어, 서버의 제어권을 탈취하는 &lt;strong&gt;웹 쉘(Web Shell)&lt;/strong&gt; 공격의 주요 통로가 된다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ansis03의 개발 블로그</title><link>https://ansis03.github.io/</link><description>Recent content on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Sun, 01 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://ansis03.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>파일 업로드 취약점과 Web Shell 공격 우회 기법</title><link>https://ansis03.github.io/posts/file_upload/file_upload/</link><pubDate>Sun, 01 Feb 2026 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/file_upload/file_upload/</guid><description>&lt;p&gt;**파일 업로드 취약점(File Upload Vulnerability)**은 공격자가 악의적인 파일을 웹 서버에 업로드하여 시스템을 제어할 수 있게 만드는 치명적인 취약점이다. 단순한 피싱 페이지 호스팅이나 XSS 공격을 넘어, 서버의 제어권을 탈취하는 &lt;strong&gt;웹 쉘(Web Shell)&lt;/strong&gt; 공격의 주요 통로가 된다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="1-web-shell의-개념과-위험성"&gt;1. Web Shell의 개념과 위험성
-&lt;/h2&gt;&lt;p&gt;사용자가 업로드한 파일을 서버가 아무런 검증 없이 저장하고 실행하게 둘 경우 심각한 문제가 발생한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md]. 공격자는 서버 측 스크립트(PHP, JSP, ASP 등)로 작성된 파일을 업로드한 뒤, 해당 파일을 요청하여 서버에서 코드가 실행되도록 유도한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
-&lt;p&gt;웹 쉘은 이러한 원리를 이용해 인터넷을 통해 시스템의 쉘(Shell) 명령어를 원격으로 실행하고 그 결과를 반환받는 악성 스크립트이다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;사용자가 업로드한 파일을 서버가 아무런 검증 없이 저장하고 실행하게 둘 경우 심각한 문제가 발생한다. 공격자는 서버 측 스크립트(PHP, JSP, ASP 등)로 작성된 파일을 업로드한 뒤, 해당 파일을 요청하여 서버에서 코드가 실행되도록 유도한다.&lt;/p&gt;
+&lt;p&gt;웹 쉘은 이러한 원리를 이용해 인터넷을 통해 시스템의 쉘(Shell) 명령어를 원격으로 실행하고 그 결과를 반환받는 악성 스크립트이다.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/basic/image.png"
 loading="lazy"
 alt="Fig 0."
 &gt;&lt;/p&gt;
-&lt;p&gt;위와 같이 &lt;code&gt;Hello&lt;/code&gt;를 출력하는 단순한 PHP 파일을 업로드하고 접근하면, 서버는 이 파일을 다운로드해 주는 것이 아니라 내부 엔진을 통해 &lt;strong&gt;실행&lt;/strong&gt;한 결과를 브라우저에 반환한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;p&gt;위와 같이 &lt;code&gt;Hello&lt;/code&gt;를 출력하는 단순한 PHP 파일을 업로드하고 접근하면, 서버는 이 파일을 다운로드해 주는 것이 아니라 내부 엔진을 통해 &lt;strong&gt;실행&lt;/strong&gt;한 결과를 브라우저에 반환한다.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/basic/image%205.png"
 loading="lazy"
 alt="Fig 5."
 &gt;&lt;/p&gt;
 &lt;h3 id="시스템-명령어-실행-테스트"&gt;시스템 명령어 실행 테스트
-&lt;/h3&gt;&lt;p&gt;단순 출력이 아닌 &lt;code&gt;system()&lt;/code&gt; 함수를 사용하면 서버의 OS 명령어를 직접 내릴 수 있다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;단순 출력이 아닌 &lt;code&gt;system()&lt;/code&gt; 함수를 사용하면 서버의 OS 명령어를 직접 내릴 수 있다.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;&amp;lt;?&lt;/span&gt;&lt;span class="nx"&gt;php&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;system&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;$_GET&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;cmd&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="cp"&gt;?&amp;gt;&lt;/span&gt;&lt;span class="err"&gt;
@@ -21,7 +21,7 @@ alt="Fig 5."
 loading="lazy"
 alt="Fig 7."
 &gt;&lt;/p&gt;
-&lt;p&gt;업로드 후 &lt;code&gt;?cmd=ls&lt;/code&gt; 또는 &lt;code&gt;?cmd=cat /etc/passwd&lt;/code&gt;와 같이 파라미터를 전달하면, 터미널과 동일하게 명령이 실행된 결과를 얻게 된다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;p&gt;업로드 후 &lt;code&gt;?cmd=ls&lt;/code&gt; 또는 &lt;code&gt;?cmd=cat /etc/passwd&lt;/code&gt;와 같이 파라미터를 전달하면, 터미널과 동일하게 명령이 실행된 결과를 얻게 된다.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/shell/image%2016.png"
 loading="lazy"
 alt="Fig 16."
@@ -32,11 +32,11 @@ alt="Fig 18."
 &gt;&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="2-업로드-경로path-탐색-전략"&gt;2. 업로드 경로(Path) 탐색 전략
-&lt;/h2&gt;&lt;p&gt;웹 쉘이 성공하려면 단순히 업로드하는 것에 그치지 않고, &lt;strong&gt;파일이 웹 서버의 어디에 저장되었는지(Web Root 하위인지)&lt;/strong&gt; 알아내어 접근(요청)해야 한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md]. 처음부터 PHP 파일을 올리기보다 정상적인 파일을 올려 경로를 유추하는 것이 정석이다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;웹 쉘이 성공하려면 단순히 업로드하는 것에 그치지 않고, &lt;strong&gt;파일이 웹 서버의 어디에 저장되었는지(Web Root 하위인지)&lt;/strong&gt; 알아내어 접근(요청)해야 한다. 처음부터 PHP 파일을 올리기보다 정상적인 파일을 올려 경로를 유추하는 것이 정석이다.&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;HTML 태그(src) 확인&lt;/strong&gt;: 프로필 사진 등을 올린 후 &lt;code&gt;&amp;lt;img&amp;gt;&lt;/code&gt; 태그의 &lt;code&gt;src&lt;/code&gt; 속성을 확인하여 경로를 유추한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;응답(Response) 분석&lt;/strong&gt;: 업로드 직후 서버가 반환하는 응답 패킷에 경로가 노출되는지 확인한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;파일 다운로드 파라미터&lt;/strong&gt;: 업로드된 파일을 다운로드할 때 &lt;code&gt;?file=/uploads/test.txt&lt;/code&gt;와 같이 경로가 사용되는지 확인한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;HTML 태그(src) 확인&lt;/strong&gt;: 프로필 사진 등을 올린 후 &lt;code&gt;&amp;lt;img&amp;gt;&lt;/code&gt; 태그의 &lt;code&gt;src&lt;/code&gt; 속성을 확인하여 경로를 유추한다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;응답(Response) 분석&lt;/strong&gt;: 업로드 직후 서버가 반환하는 응답 패킷에 경로가 노출되는지 확인한다.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;파일 다운로드 파라미터&lt;/strong&gt;: 업로드된 파일을 다운로드할 때 &lt;code&gt;?file=/uploads/test.txt&lt;/code&gt;와 같이 경로가 사용되는지 확인한다.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/discovery/image%2024.png"
 loading="lazy"
@@ -46,18 +46,18 @@ alt="Fig 24. 프로필 이미지 업로드 결과"
 loading="lazy"
 alt="Fig 26. 이미지 소스 경로 확인"
 &gt;&lt;/p&gt;
-&lt;p&gt;이렇게 확인된 경로(&lt;code&gt;/uploads/...&lt;/code&gt;)에 &lt;code&gt;.php&lt;/code&gt; 파일을 올리고 직접 접근하면 웹 쉘을 실행할 수 있다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;p&gt;이렇게 확인된 경로(&lt;code&gt;/uploads/...&lt;/code&gt;)에 &lt;code&gt;.php&lt;/code&gt; 파일을 올리고 직접 접근하면 웹 쉘을 실행할 수 있다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="3-필터링-우회bypass-기법"&gt;3. 필터링 우회(Bypass) 기법
-&lt;/h2&gt;&lt;p&gt;서버가 보안을 위해 특정 파일의 업로드를 차단할 때, 주로 &lt;strong&gt;블랙리스트(Blacklist)&lt;/strong&gt; 방식을 사용한다면 다양한 우회 기법이 존재한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;서버가 보안을 위해 특정 파일의 업로드를 차단할 때, 주로 &lt;strong&gt;블랙리스트(Blacklist)&lt;/strong&gt; 방식을 사용한다면 다양한 우회 기법이 존재한다.&lt;/p&gt;
 &lt;h3 id="31-확장자-및-대소문자-우회"&gt;3.1. 확장자 및 대소문자 우회
-&lt;/h3&gt;&lt;p&gt;&lt;code&gt;.php&lt;/code&gt;만 차단하고 있다면 대소문자를 섞거나(&lt;code&gt;.PhP&lt;/code&gt;, &lt;code&gt;.pHp&lt;/code&gt;) 서버가 실행할 수 있는 다른 확장자(&lt;code&gt;.phtml&lt;/code&gt;, &lt;code&gt;.php3&lt;/code&gt;, &lt;code&gt;.jspx&lt;/code&gt; 등)를 사용하여 우회한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;.php&lt;/code&gt;만 차단하고 있다면 대소문자를 섞거나(&lt;code&gt;.PhP&lt;/code&gt;, &lt;code&gt;.pHp&lt;/code&gt;) 서버가 실행할 수 있는 다른 확장자(&lt;code&gt;.phtml&lt;/code&gt;, &lt;code&gt;.php3&lt;/code&gt;, &lt;code&gt;.jspx&lt;/code&gt; 등)를 사용하여 우회한다.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/bypass/image%2039.png"
 loading="lazy"
 alt="Fig 39. 확장자 우회 시도"
 &gt;&lt;/p&gt;
 &lt;h3 id="32-content-type-변조"&gt;3.2. Content-Type 변조
-&lt;/h3&gt;&lt;p&gt;서버가 파일 확장자가 아닌 HTTP 헤더의 &lt;code&gt;Content-Type&lt;/code&gt;만을 검사한다면, 프록시 도구(Burp Suite 등)를 사용해 이를 &lt;code&gt;image/jpeg&lt;/code&gt; 등으로 변조하여 업로드할 수 있다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;서버가 파일 확장자가 아닌 HTTP 헤더의 &lt;code&gt;Content-Type&lt;/code&gt;만을 검사한다면, 프록시 도구(Burp Suite 등)를 사용해 이를 &lt;code&gt;image/jpeg&lt;/code&gt; 등으로 변조하여 업로드할 수 있다.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/bypass/image%2044.png"
 loading="lazy"
 alt="Fig 44. Content-Type 변조 전"
@@ -67,22 +67,22 @@ loading="lazy"
 alt="Fig 45. Content-Type 변조 후 업로드 성공"
 &gt;&lt;/p&gt;
 &lt;h3 id="33-파일-시그니처-조작-및-폴리글랏polyglot"&gt;3.3. 파일 시그니처 조작 및 폴리글랏(Polyglot)
-&lt;/h3&gt;&lt;p&gt;더 꼼꼼하게 파일 구조의 헤더(시그니처)를 검사하는 경우, 정상적인 이미지 파일(JPG, PNG) 구조 안에 PHP 코드를 삽입하여 우회할 수 있다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md]. 웹 서버는 파일 내에서 &lt;code&gt;&amp;lt;?php ... ?&amp;gt;&lt;/code&gt; 태그만 찾으면 해당 부분을 실행하기 때문이다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;더 꼼꼼하게 파일 구조의 헤더(시그니처)를 검사하는 경우, 정상적인 이미지 파일(JPG, PNG) 구조 안에 PHP 코드를 삽입하여 우회할 수 있다. 웹 서버는 파일 내에서 &lt;code&gt;&amp;lt;?php ... ?&amp;gt;&lt;/code&gt; 태그만 찾으면 해당 부분을 실행하기 때문이다.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/bypass/image%2048.png"
 loading="lazy"
 alt="Fig 48. 이미지 파일 내부에 삽입된 PHP 코드"
 &gt;&lt;/p&gt;
-&lt;p&gt;확장자를 &lt;code&gt;.php&lt;/code&gt;로 강제 변경하여 업로드하면, 이미지가 깨지더라도 내부에 포함된 웹 쉘 명령은 정상적으로 처리되어 응답에 섞여 나온다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;p&gt;확장자를 &lt;code&gt;.php&lt;/code&gt;로 강제 변경하여 업로드하면, 이미지가 깨지더라도 내부에 포함된 웹 쉘 명령은 정상적으로 처리되어 응답에 섞여 나온다.&lt;/p&gt;
 &lt;p&gt;&lt;img src="https://ansis03.github.io/image/file_upload/bypass/image%2054.png"
 loading="lazy"
 alt="Fig 54. 손상된 이미지와 함께 출력된 명령어 실행 결과"
 &gt;&lt;/p&gt;
 &lt;h3 id="34-실행-경로-이탈-및-htaccess-변조"&gt;3.4. 실행 경로 이탈 및 .htaccess 변조
-&lt;/h3&gt;&lt;p&gt;업로드 폴더(&lt;code&gt;/uploads/&lt;/code&gt;) 자체에 스크립트 실행 권한이 제거되어 있다면, 파일명에 &lt;code&gt;../&lt;/code&gt; (Path Traversal)을 삽입하여 상위 디렉터리에 저장되도록 유도할 수 있다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].
-또한 &lt;code&gt;.htaccess&lt;/code&gt; 파일을 업로드하여 특정 확장자(예: &lt;code&gt;.normaltic&lt;/code&gt;)를 PHP 엔진이 실행하도록 설정을 덮어씌우는 공격도 가능하다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;업로드 폴더(&lt;code&gt;/uploads/&lt;/code&gt;) 자체에 스크립트 실행 권한이 제거되어 있다면, 파일명에 &lt;code&gt;../&lt;/code&gt; (Path Traversal)을 삽입하여 상위 디렉터리에 저장되도록 유도할 수 있다.
+또한 &lt;code&gt;.htaccess&lt;/code&gt; 파일을 업로드하여 특정 확장자(예: &lt;code&gt;.normaltic&lt;/code&gt;)를 PHP 엔진이 실행하도록 설정을 덮어씌우는 공격도 가능하다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="결론"&gt;결론
-&lt;/h2&gt;&lt;p&gt;파일 업로드 취약점은 해커가 내부망으로 침투(Pivoting)하기 위한 첫 단추로 자주 악용된다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md]. 이를 방어하기 위해서는 단순히 위험한 확장자를 막는 블랙리스트 방식이 아니라, 허용된 파일 포맷만 엄격하게 통과시키는 &lt;strong&gt;화이트리스트(Whitelist)&lt;/strong&gt; 검증을 구현해야 한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md]. 또한 업로드된 파일이 저장되는 디렉터리에는 스크립트 실행 권한을 철저히 제거하여 최악의 상황에서도 코드가 동작하지 못하도록 막아야 한다 [cite: File 취약점 2ee729fcd51a80248a46d0942f76b62a.md].&lt;/p&gt;</description></item><item><title>CSRF(Cross Site Request Forgery): 요청 위조 공격의 원리와 대응</title><link>https://ansis03.github.io/posts/csrf/csrf/</link><pubDate>Wed, 14 Jan 2026 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/csrf/csrf/</guid><description>&lt;p&gt;**CSRF(Cross Site Request Forgery)**는 사용자가 자신의 의지와는 무관하게 공격자가 의도한 행위(비밀번호 변경, 게시글 작성 등)를 특정 웹사이트에 요청하게 만드는 공격 기법이다. XSS가 사용자의 브라우저에서 스크립트를 실행시키는 것이 목적이라면, CSRF는 이용자의 권한을 도용하여 &lt;strong&gt;서버에 위조된 요청을 보내는 것&lt;/strong&gt;이 핵심이다.&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;파일 업로드 취약점은 해커가 내부망으로 침투(Pivoting)하기 위한 첫 단추로 자주 악용된다. 이를 방어하기 위해서는 단순히 위험한 확장자를 막는 블랙리스트 방식이 아니라, 허용된 파일 포맷만 엄격하게 통과시키는 &lt;strong&gt;화이트리스트(Whitelist)&lt;/strong&gt; 검증을 구현해야 한다. 또한 업로드된 파일이 저장되는 디렉터리에는 스크립트 실행 권한을 철저히 제거하여 최악의 상황에서도 코드가 동작하지 못하도록 막아야 한다.&lt;/p&gt;</description></item><item><title>CSRF(Cross Site Request Forgery): 요청 위조 공격의 원리와 대응</title><link>https://ansis03.github.io/posts/csrf/csrf/</link><pubDate>Wed, 14 Jan 2026 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/csrf/csrf/</guid><description>&lt;p&gt;**CSRF(Cross Site Request Forgery)**는 사용자가 자신의 의지와는 무관하게 공격자가 의도한 행위(비밀번호 변경, 게시글 작성 등)를 특정 웹사이트에 요청하게 만드는 공격 기법이다. XSS가 사용자의 브라우저에서 스크립트를 실행시키는 것이 목적이라면, CSRF는 이용자의 권한을 도용하여 &lt;strong&gt;서버에 위조된 요청을 보내는 것&lt;/strong&gt;이 핵심이다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="1-get-방식을-이용한-csrf"&gt;1. GET 방식을 이용한 CSRF
 &lt;/h2&gt;&lt;p&gt;가장 단순한 형태의 CSRF는 파라미터가 URL에 노출되는 GET 방식을 악용하는 것이다. 비밀번호 변경 로직이 특정 URL 접속만으로 처리된다면 공격은 매우 쉬워진다.&lt;/p&gt;
