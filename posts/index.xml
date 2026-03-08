@@ -1,4 +1,51 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ansis03의 개발 블로그</title><link>https://ansis03.github.io/posts/</link><description>Recent content in Posts on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Sat, 27 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://ansis03.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>XSS(Cross-Site Scripting) 공격 원리와 데이터 탈취 실습</title><link>https://ansis03.github.io/posts/xss/xss/</link><pubDate>Sat, 27 Dec 2025 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/xss/xss/</guid><description>&lt;p&gt;**XSS(Cross-Site Scripting)**는 웹 애플리케이션의 취약점을 이용해 악성 스크립트를 삽입하고, 이를 통해 해당 웹사이트를 방문하는 이용자들의 브라우저에서 코드를 실행시키는 공격 기법이다. SQL Injection이 서버 측 데이터베이스를 목표로 한다면, XSS는 피해자의 웹 브라우저, 즉 클라이언트 측을 직접 겨냥한다는 점이 핵심이다.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on ansis03의 개발 블로그</title><link>https://ansis03.github.io/posts/</link><description>Recent content in Posts on ansis03의 개발 블로그</description><generator>Hugo -- gohugo.io</generator><language>ko-kr</language><lastBuildDate>Wed, 14 Jan 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://ansis03.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>CSRF(Cross Site Request Forgery): 요청 위조 공격의 원리와 대응</title><link>https://ansis03.github.io/posts/csrf/csrf/</link><pubDate>Wed, 14 Jan 2026 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/csrf/csrf/</guid><description>&lt;p&gt;**CSRF(Cross Site Request Forgery)**는 사용자가 자신의 의지와는 무관하게 공격자가 의도한 행위(비밀번호 변경, 게시글 작성 등)를 특정 웹사이트에 요청하게 만드는 공격 기법이다. XSS가 사용자의 브라우저에서 스크립트를 실행시키는 것이 목적이라면, CSRF는 이용자의 권한을 도용하여 &lt;strong&gt;서버에 위조된 요청을 보내는 것&lt;/strong&gt;이 핵심이다.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="1-get-방식을-이용한-csrf"&gt;1. GET 방식을 이용한 CSRF
+&lt;/h2&gt;&lt;p&gt;가장 단순한 형태의 CSRF는 파라미터가 URL에 노출되는 GET 방식을 악용하는 것이다. 비밀번호 변경 로직이 특정 URL 접속만으로 처리된다면 공격은 매우 쉬워진다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/csrf/basic/image%201.png"
+loading="lazy"
+alt="Fig 1. 비밀번호 변경 시 발생하는 요청 확인"
+&gt;&lt;/p&gt;
+&lt;p&gt;공격자는 비밀번호 변경 요청 URL을 게시글의 링크나 이미지 태그에 숨겨 유포한다. 사용자가 이 링크를 클릭하거나, 스크립트가 실행되는 게시물을 읽는 순간 서버로 변경 요청이 전송된다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/csrf/basic/image%204.png"
+loading="lazy"
+alt="Fig 4. 링크 클릭을 통한 비밀번호 변경 유도"
+&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="2-post-방식과-스텔스stealth-공격"&gt;2. POST 방식과 스텔스(Stealth) 공격
+&lt;/h2&gt;&lt;p&gt;POST 방식은 데이터가 URL에 드러나지 않지만, HTML의 &lt;code&gt;&amp;lt;form&amp;gt;&lt;/code&gt; 태그와 Javascript를 이용하면 얼마든지 위조가 가능하다.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// POST 요청을 자동으로 전송하는 폼 예시
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;form&lt;/span&gt; &lt;span class="nx"&gt;method&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;POST&amp;#34;&lt;/span&gt; &lt;span class="nx"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;비밀번호_변경_주소&amp;#34;&lt;/span&gt; &lt;span class="nx"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;myForm&amp;#34;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;input&lt;/span&gt; &lt;span class="nx"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;hidden&amp;#34;&lt;/span&gt; &lt;span class="nx"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;pw&amp;#34;&lt;/span&gt; &lt;span class="nx"&gt;value&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;1234&amp;#34;&lt;/span&gt; &lt;span class="o"&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="err"&gt;/form&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nx"&gt;script&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nb"&gt;document&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getElementById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;myForm&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="nx"&gt;submit&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="err"&gt;/script&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;공격자가 만든 이 폼(Form)이 실행되면 사용자는 자신도 모르게 POST 요청을 보내게 된다. 더 나아가, &lt;code&gt;&amp;lt;iframe&amp;gt;&lt;/code&gt;을 활용하면 페이지 이동 없이 백그라운드에서 조용히 공격을 수행하는 &lt;strong&gt;스텔스 CSRF&lt;/strong&gt;가 가능하다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/csrf/method/image%2014.png"
+loading="lazy"
+alt="Fig 14. iframe을 이용한 백그라운드 공격 구조"
+&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="3-csrf-대응-방안-csrf-토큰"&gt;3. CSRF 대응 방안: CSRF 토큰
+&lt;/h2&gt;&lt;p&gt;CSRF 공격이 가능한 근본적인 이유는 서버가 요청의 &amp;lsquo;의도&amp;rsquo;를 파악하지 못하기 때문이다. 이를 방어하기 위해 사용되는 것이 **CSRF 토큰(CSRF Token)**이다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/csrf/token/image%2017.png"
+loading="lazy"
+alt="Fig 17. CSRF 토큰의 동작 원리"
+&gt;&lt;/p&gt;
+&lt;p&gt;서버는 사용자가 폼 페이지에 접속할 때 예측 불가능한 난수(Token)를 발급하여 세션에 저장하고, HTML 폼의 &lt;code&gt;hidden&lt;/code&gt; 필드에 넣어준다. 사용자가 요청을 보낼 때 이 토큰이 함께 전송되어야만 서버가 정상적인 요청으로 승인한다.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="4-csrf-토큰-우회와-xss의-결합"&gt;4. CSRF 토큰 우회와 XSS의 결합
+&lt;/h2&gt;&lt;p&gt;CSRF 토큰은 강력한 방어책이지만 만능은 아니다. 만약 해당 사이트에 &lt;strong&gt;XSS 취약점&lt;/strong&gt;이 존재한다면, 공격자는 자바스크립트를 이용해 다른 페이지(예: 마이페이지)에 로드된 CSRF 토큰 값을 읽어올 수 있다.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://ansis03.github.io/image/csrf/token/image%2021.png"
+loading="lazy"
+alt="Fig 21. XSS를 이용한 CSRF 토큰 탈취 및 우회"
+&gt;&lt;/p&gt;
+&lt;p&gt;공격 스크립트가 &lt;code&gt;&amp;lt;iframe&amp;gt;&lt;/code&gt;으로 마이페이지를 몰래 불러온 뒤 토큰 값을 탈취하고, 이를 포함하여 위조된 요청을 보내면 서버는 이를 정상적인 요청으로 판단하게 된다.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="결론"&gt;결론
+&lt;/h2&gt;&lt;p&gt;CSRF는 사용자의 신뢰를 악용하여 권한을 탈취하는 위협적인 공격이다. 이를 방어하기 위해서는 CSRF 토큰 도입은 물론, 근본적인 취약점이 될 수 있는 XSS를 철저히 차단해야 한다. 또한 비밀번호 변경과 같은 민감한 로직에는 현재 비밀번호 재입력이나 2차 인증을 추가하는 것이 가장 안전한 대응 방안이다.&lt;/p&gt;</description></item><item><title>XSS(Cross-Site Scripting) 공격 원리와 데이터 탈취 실습</title><link>https://ansis03.github.io/posts/xss/xss/</link><pubDate>Sat, 27 Dec 2025 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/xss/xss/</guid><description>&lt;p&gt;**XSS(Cross-Site Scripting)**는 웹 애플리케이션의 취약점을 이용해 악성 스크립트를 삽입하고, 이를 통해 해당 웹사이트를 방문하는 이용자들의 브라우저에서 코드를 실행시키는 공격 기법이다. SQL Injection이 서버 측 데이터베이스를 목표로 한다면, XSS는 피해자의 웹 브라우저, 즉 클라이언트 측을 직접 겨냥한다는 점이 핵심이다.&lt;/p&gt;
 &lt;p&gt;HTML과 Javascript 같은 클라이언트 스크립트를 피해자의 컴퓨터에서 실행되도록 유도하는 것이 이 공격의 궁극적인 목적이다.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="1-xss의-유형"&gt;1. XSS의 유형
@@ -1492,4 +1539,4 @@ loading="lazy"
 alt="Fig 15. 데이터 추출"
 &gt;
 이 기법은 로그인 페이지처럼 결과가 한정적인 곳보다, DB 질의 결과가 직접 화면에 출력되는 게시판 같은 곳에서 가장 효과적이다.&lt;/p&gt;
-&lt;hr&gt;</description></item><item><title/><link>https://ansis03.github.io/posts/csrf/csrf/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://ansis03.github.io/posts/csrf/csrf/</guid><description/></item></channel></rss>
+&lt;hr&gt;</description></item></channel></rss>
